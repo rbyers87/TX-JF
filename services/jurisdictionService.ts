@@ -162,6 +162,9 @@ export class JurisdictionService {
   private static readonly FALLBACK_CITIES_URL = 'https://maps.dot.state.tx.us/arcgis/rest/services/General/Cities/MapServer/0/query';
   private static readonly FALLBACK_COUNTIES_URL = 'https://maps.dot.state.tx.us/arcgis/rest/services/Boundaries/MapServer/1/query';
 
+  // Cache for searched cities to avoid repeated API calls
+  private static cityContactCache = new Map<string, CityData>();
+
   static async getJurisdictionByCoordinates(
     latitude: number,
     longitude: number
@@ -329,14 +332,22 @@ export class JurisdictionService {
               console.log(`Found city in database: ${cityData.name}`);
               return cityData;
             } else {
-              console.log(`City not in database, returning basic info`);
-              // Return basic city info if not in our database
-              return {
-                name: cityName,
-                county: countyName || 'Unknown County',
-                policePhone: undefined,
-                policeWebsite: undefined,
-              };
+              console.log(`City not in database, searching online for contact info`);
+              
+              // Check cache first
+              const cacheKey = cityName.toLowerCase();
+              if (this.cityContactCache.has(cacheKey)) {
+                console.log(`Found city in cache: ${cityName}`);
+                return this.cityContactCache.get(cacheKey)!;
+              }
+
+              // Search online for police department contact info
+              const searchedCityData = await this.searchCityPoliceInfo(cityName, countyName || 'Unknown County');
+              
+              // Cache the result
+              this.cityContactCache.set(cacheKey, searchedCityData);
+              
+              return searchedCityData;
             }
           }
         }
@@ -465,5 +476,286 @@ export class JurisdictionService {
       sheriffPhone: '(512) 463-2000',
       sheriffWebsite: 'https://www.dps.texas.gov',
     };
+  }
+
+  /**
+   * Search online for police department contact information
+   */
+  private static async searchCityPoliceInfo(cityName: string, countyName: string): Promise<CityData> {
+    console.log(`Searching online for ${cityName} police department info`);
+    
+    try {
+      // Use a CORS-friendly search approach
+      const searchResult = await this.performWebSearch(cityName, countyName);
+      
+      if (searchResult.phone || searchResult.website) {
+        console.log(`Found contact info via search: phone=${searchResult.phone}, website=${searchResult.website}`);
+        return {
+          name: cityName,
+          county: countyName,
+          policePhone: searchResult.phone,
+          policeWebsite: searchResult.website,
+        };
+      }
+    } catch (error) {
+      console.error(`Error searching for ${cityName} police info:`, error);
+    }
+
+    // If search fails, construct a likely website URL and provide guidance
+    const constructedWebsite = this.constructLikelyWebsiteURL(cityName);
+    
+    console.log(`Search failed, returning city with constructed website: ${constructedWebsite}`);
+    return {
+      name: cityName,
+      county: countyName,
+      policePhone: `Search "${cityName} Texas police department phone"`,
+      policeWebsite: constructedWebsite,
+    };
+  }
+
+  /**
+   * Perform web search using available APIs and methods
+   */
+  private static async performWebSearch(cityName: string, countyName: string): Promise<{phone?: string, website?: string}> {
+    const results = { phone: undefined as string | undefined, website: undefined as string | undefined };
+
+    try {
+      // Method 1: Try to fetch city's main website and parse for police info
+      const cityWebsite = await this.findCityOfficialWebsite(cityName);
+      if (cityWebsite) {
+        results.website = cityWebsite;
+        
+        // Try to find police department page from main city site
+        const policeWebsite = await this.findPolicePageFromCityWebsite(cityWebsite, cityName);
+        if (policeWebsite) {
+          results.website = policeWebsite;
+        }
+      }
+
+      // Method 2: Try common government website patterns
+      if (!results.website) {
+        results.website = await this.tryCommonGovWebsites(cityName);
+      }
+
+      // Method 3: Try to extract phone from any found website
+      if (results.website && !results.phone) {
+        results.phone = await this.extractPhoneFromWebsite(results.website);
+      }
+
+    } catch (error) {
+      console.log('Web search methods failed:', error);
+    }
+
+    return results;
+  }
+
+  /**
+   * Find the city's official website
+   */
+  private static async findCityOfficialWebsite(cityName: string): Promise<string | undefined> {
+    // Try common city website patterns
+    const patterns = [
+      `cityof${cityName.toLowerCase().replace(/\s+/g, '')}.com`,
+      `${cityName.toLowerCase().replace(/\s+/g, '')}tx.gov`,
+      `${cityName.toLowerCase().replace(/\s+/g, '')}.tx.us`,
+      `city${cityName.toLowerCase().replace(/\s+/g, '')}.org`,
+      `www.cityof${cityName.toLowerCase().replace(/\s+/g, '')}.com`
+    ];
+
+    for (const domain of patterns) {
+      try {
+        const url = domain.startsWith('www.') ? `https://${domain}` : `https://www.${domain}`;
+        
+        // Try to fetch just the headers to see if site exists
+        const response = await fetch(url, { 
+          method: 'HEAD',
+          mode: 'no-cors', // This will help with CORS issues
+          cache: 'no-cache'
+        });
+        
+        // If we get here without error, the site likely exists
+        console.log(`Found potential city website: ${url}`);
+        return url;
+      } catch (error) {
+        continue; // Try next pattern
+      }
+    }
+
+    return undefined;
+  }
+
+  /**
+   * Find police department page from city website
+   */
+  private static async findPolicePageFromCityWebsite(cityWebsite: string, cityName: string): Promise<string | undefined> {
+    try {
+      // Try common police department page patterns
+      const baseUrl = new URL(cityWebsite).origin;
+      const policePatterns = [
+        '/police',
+        '/departments/police',
+        '/police-department',
+        '/public-safety/police',
+        '/services/police',
+        '/government/departments/police'
+      ];
+
+      for (const pattern of policePatterns) {
+        try {
+          const policeUrl = `${baseUrl}${pattern}`;
+          const response = await fetch(policeUrl, { 
+            method: 'HEAD',
+            mode: 'no-cors',
+            cache: 'no-cache'
+          });
+          
+          console.log(`Found potential police page: ${policeUrl}`);
+          return policeUrl;
+        } catch (error) {
+          continue;
+        }
+      }
+    } catch (error) {
+      console.log('Error finding police page:', error);
+    }
+
+    return undefined;
+  }
+
+  /**
+   * Try common government website patterns
+   */
+  private static async tryCommonGovWebsites(cityName: string): Promise<string | undefined> {
+    const citySlug = cityName.toLowerCase().replace(/\s+/g, '').replace(/[^a-z]/g, '');
+    
+    const govPatterns = [
+      `https://${citySlug}.tx.us`,
+      `https://www.${citySlug}tx.gov`,
+      `https://city${citySlug}.org`,
+      `https://${citySlug}.org`,
+      `https://www.cityof${citySlug}.net`
+    ];
+
+    for (const url of govPatterns) {
+      try {
+        const response = await fetch(url, { 
+          method: 'HEAD',
+          mode: 'no-cors',
+          cache: 'no-cache'
+        });
+        
+        console.log(`Found government website: ${url}`);
+        return url;
+      } catch (error) {
+        continue;
+      }
+    }
+
+    return undefined;
+  }
+
+  /**
+   * Extract phone number from website (limited due to CORS)
+   */
+  private static async extractPhoneFromWebsite(website: string): Promise<string | undefined> {
+    // Due to CORS restrictions, we can't easily fetch and parse website content
+    // Instead, we'll return a search suggestion
+    return undefined;
+  }
+
+  /**
+   * Extract phone number from text using regex
+   */
+  private static extractPhoneNumber(text: string): string | undefined {
+    if (!text) return undefined;
+    
+    // Common phone number patterns for US numbers
+    const phonePatterns = [
+      /\((\d{3})\)\s*(\d{3})-(\d{4})/,  // (409) 123-4567
+      /(\d{3})-(\d{3})-(\d{4})/,        // 409-123-4567
+      /(\d{3})\.(\d{3})\.(\d{4})/,      // 409.123.4567
+      /(\d{3})\s+(\d{3})\s+(\d{4})/,    // 409 123 4567
+      /1?[-.\s]?\(?(\d{3})\)?[-.\s]?(\d{3})[-.\s]?(\d{4})/ // Various formats with optional 1
+    ];
+
+    for (const pattern of phonePatterns) {
+      const match = text.match(pattern);
+      if (match) {
+        // Format as (XXX) XXX-XXXX
+        const digits = match[0].replace(/\D/g, '');
+        if (digits.length === 10) {
+          return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+        } else if (digits.length === 11 && digits[0] === '1') {
+          return `(${digits.slice(1, 4)}) ${digits.slice(4, 7)}-${digits.slice(7)}`;
+        }
+      }
+    }
+    
+    return undefined;
+  }
+
+  /**
+   * Extract website URL from text
+   */
+  private static extractWebsite(text: string, cityName: string): string | undefined {
+    if (!text) return undefined;
+    
+    // Look for URLs in the text
+    const urlPatterns = [
+      /https?:\/\/[^\s<>"]+/gi,
+      /www\.[^\s<>"]+/gi,
+      /[a-zA-Z0-9][a-zA-Z0-9-]*\.(gov|org|com|net)[^\s<>"]*/gi
+    ];
+
+    for (const pattern of urlPatterns) {
+      const matches = text.match(pattern);
+      if (matches) {
+        for (let url of matches) {
+          // Clean up the URL
+          url = url.replace(/[.,;:]$/, ''); // Remove trailing punctuation
+          
+          // Prefer .gov sites or sites that contain the city name
+          if (url.includes('.gov') || url.toLowerCase().includes(cityName.toLowerCase().replace(/\s+/g, ''))) {
+            // Ensure it starts with http
+            if (!url.startsWith('http')) {
+              url = 'https://' + url;
+            }
+            return url;
+          }
+        }
+        
+        // If no preferred URL found, return the first one
+        let url = matches[0].replace(/[.,;:]$/, '');
+        if (!url.startsWith('http')) {
+          url = 'https://' + url;
+        }
+        return url;
+      }
+    }
+    
+    return undefined;
+  }
+
+  /**
+   * Construct a likely website URL for the city
+   */
+  private static constructLikelyWebsiteURL(cityName: string): string {
+    // Convert city name to likely domain format
+    const citySlug = cityName.toLowerCase()
+      .replace(/\s+/g, '') // Remove spaces
+      .replace(/[^a-z0-9]/g, ''); // Remove special characters
+    
+    // Try common patterns for city government websites
+    const patterns = [
+      `https://www.cityof${citySlug}.com`,
+      `https://www.${citySlug}tx.gov`,
+      `https://www.${citySlug}texas.gov`,
+      `https://www.city${citySlug}.com`,
+      `https://${citySlug}.tx.us`,
+      `https://www.${citySlug}.org`
+    ];
+    
+    // Return the most likely one (usually cityof[name].com or [name]tx.gov)
+    return patterns[0];
   }
 }
