@@ -6,106 +6,145 @@ const TEXAS_COUNTIES: Record<string, CountyData> = {
     name: 'Jefferson County',
     sheriffPhone: '(409) 835-8411',
     sheriffWebsite: 'https://www.co.jefferson.tx.us/sheriff',
+    address: '1001 Pearl St, Beaumont, TX 77701',
   },
   'harris': {
     name: 'Harris County',
     sheriffPhone: '(713) 755-7628',
     sheriffWebsite: 'https://www.hcso.org',
+    address: '1200 Baker St, Houston, TX 77002',
   },
   'dallas': {
     name: 'Dallas County',
     sheriffPhone: '(214) 749-8641',
     sheriffWebsite: 'https://www.dallascounty.org/departments/sheriff',
+    address: '133 N Industrial Blvd, Dallas, TX 75207',
   },
   'tarrant': {
     name: 'Tarrant County',
     sheriffPhone: '(817) 884-1213',
     sheriffWebsite: 'https://www.tarrantcounty.com/en/sheriff',
+    address: '200 Taylor St, Fort Worth, TX 76196',
   },
   'bexar': {
     name: 'Bexar County',
     sheriffPhone: '(210) 335-6000',
     sheriffWebsite: 'https://www.bexar.org/1250/Sheriffs-Office',
+    address: '200 N Comal St, San Antonio, TX 78207',
   },
   'travis': {
     name: 'Travis County',
     sheriffPhone: '(512) 854-9770',
     sheriffWebsite: 'https://www.tcso.org',
+    address: '5555 Airport Blvd, Austin, TX 78751',
   },
   'collin': {
     name: 'Collin County',
     sheriffPhone: '(972) 547-5100',
     sheriffWebsite: 'https://www.collincountytx.gov/sheriff',
+    address: '4300 Community Ave, McKinney, TX 75071',
   },
   'denton': {
     name: 'Denton County',
     sheriffPhone: '(940) 349-1600',
     sheriffWebsite: 'https://www.dentoncounty.gov/Departments/Sheriff',
+    address: '127 N Woodrow Ln, Denton, TX 76205',
   },
   'fort_bend': {
     name: 'Fort Bend County',
     sheriffPhone: '(281) 341-4665',
     sheriffWebsite: 'https://www.fbcso.org',
+    address: '1410 Ransom Rd, Richmond, TX 77469',
   },
   'williamson': {
     name: 'Williamson County',
     sheriffPhone: '(512) 943-1300',
     sheriffWebsite: 'https://www.wilco.org/Departments/Sheriff',
+    address: '508 S Rock St, Georgetown, TX 78626',
   },
   'hidalgo': {
     name: 'Hidalgo County',
     sheriffPhone: '(956) 383-8114',
     sheriffWebsite: 'https://www.hidalgocounty.us/269/Sheriffs-Office',
+    address: '100 N Closner Blvd, Edinburg, TX 78539',
   },
   'el_paso': {
     name: 'El Paso County',
     sheriffPhone: '(915) 538-2008',
     sheriffWebsite: 'https://www.epcounty.com/sheriff',
+    address: '3850 E Paisano Dr, El Paso, TX 79905',
   },
   'nueces': {
     name: 'Nueces County',
     sheriffPhone: '(361) 887-2222',
     sheriffWebsite: 'https://www.nuecesco.com/sheriff',
+    address: '901 Leopard St, Corpus Christi, TX 78401',
   },
   'lubbock': {
     name: 'Lubbock County',
     sheriffPhone: '(806) 775-1400',
     sheriffWebsite: 'https://www.lubbockcounty.gov/departments/sheriff',
+    address: '916 Main St, Lubbock, TX 79401',
   },
   'galveston': {
     name: 'Galveston County',
     sheriffPhone: '(409) 766-2322',
     sheriffWebsite: 'https://www.galvestoncountysheriff.org',
+    address: '5600 39th St, Dickinson, TX 77539',
   },
   'montgomery': {
     name: 'Montgomery County',
     sheriffPhone: '(936) 760-5800',
     sheriffWebsite: 'https://www.mctxsheriff.org',
+    address: '100 Community Center Dr, Conroe, TX 77301',
   },
   'brazoria': {
     name: 'Brazoria County',
     sheriffPhone: '(979) 864-2392',
     sheriffWebsite: 'https://www.brazoriacountysheriff.org',
+    address: '111 E Locust St, Angleton, TX 77515',
   },
   'bell': {
     name: 'Bell County',
     sheriffPhone: '(254) 933-5412',
     sheriffWebsite: 'https://www.bellcountytx.com/departments/sheriff',
+    address: '1201 Huey Bratcher Rd, Belton, TX 76513',
   },
   'mclennan': {
     name: 'McLennan County',
     sheriffPhone: '(254) 757-5049',
     sheriffWebsite: 'https://www.mclennancountytx.gov/departments/sheriff',
+    address: '3121 E Loop 340, Waco, TX 76705',
   },
   'cameron': {
     name: 'Cameron County',
     sheriffPhone: '(956) 554-6700',
     sheriffWebsite: 'https://www.cameroncountysheriff.org',
+    address: '7300 Old Alice Rd, Olmito, TX 78575',
   },
   'webb': {
     name: 'Webb County',
     sheriffPhone: '(956) 415-2878',
     sheriffWebsite: 'https://www.webbcountytx.gov/sheriff',
+    address: '1110 Victoria St, Laredo, TX 78040',
+  },
+  'orange': {
+    name: 'Orange County',
+    sheriffPhone: '(409) 883-2612',
+    sheriffWebsite: 'https://www.orangecountytx.gov/departments/sheriff',
+    address: '123 6th St, Orange, TX 77630',
+  },
+  'smith': {
+    name: 'Smith County',
+    sheriffPhone: '(903) 566-6600',
+    sheriffWebsite: 'https://www.smith-county.com/sheriff',
+    address: '227 N Spring Ave, Tyler, TX 75702',
+  },
+  'brazos': {
+    name: 'Brazos County',
+    sheriffPhone: '(979) 361-4900',
+    sheriffWebsite: 'https://www.brazoscountytx.gov/sheriff',
+    address: '1755 Briarcrest Dr, Bryan, TX 77802',
   },
 };
 
@@ -116,133 +155,183 @@ const TEXAS_CITIES: Record<string, CityData> = {
     county: 'Jefferson County',
     policePhone: '(409) 983-8600',
     policeWebsite: 'https://www.portarthurtx.gov/departments/police',
+    address: '645 4th St, Port Arthur, TX 77640',
   },
   'houston': {
     name: 'Houston',
     county: 'Harris County',
     policePhone: '(713) 884-3131',
     policeWebsite: 'https://www.houstontx.gov/police',
+    address: '1200 Travis St, Houston, TX 77002',
   },
   'san antonio': {
     name: 'San Antonio',
     county: 'Bexar County',
     policePhone: '(210) 207-7273',
     policeWebsite: 'https://www.sanantonio.gov/SAPD',
+    address: '315 S Santa Rosa Ave, San Antonio, TX 78207',
   },
   'dallas': {
     name: 'Dallas',
     county: 'Dallas County',
     policePhone: '(214) 671-4282',
     policeWebsite: 'https://www.dallaspolice.net',
+    address: '1400 S Lamar St, Dallas, TX 75215',
   },
   'austin': {
     name: 'Austin',
     county: 'Travis County',
     policePhone: '(512) 974-5000',
     policeWebsite: 'https://www.austintexas.gov/department/police',
+    address: '715 E 8th St, Austin, TX 78701',
   },
   'fort worth': {
     name: 'Fort Worth',
     county: 'Tarrant County',
     policePhone: '(817) 392-4222',
     policeWebsite: 'https://www.fortworthtexas.gov/departments/police',
+    address: '350 W Belknap St, Fort Worth, TX 76102',
   },
   'el paso': {
     name: 'El Paso',
     county: 'El Paso County',
     policePhone: '(915) 212-4400',
     policeWebsite: 'https://www.elpasotexas.gov/police',
+    address: '911 N Raynor St, El Paso, TX 79901',
   },
   'arlington': {
     name: 'Arlington',
     county: 'Tarrant County',
     policePhone: '(817) 459-5700',
     policeWebsite: 'https://www.arlingtontx.gov/city_hall/departments/police',
+    address: '620 W Division St, Arlington, TX 76011',
   },
   'corpus christi': {
     name: 'Corpus Christi',
     county: 'Nueces County',
     policePhone: '(361) 886-2600',
     policeWebsite: 'https://www.cctexas.com/departments/police',
+    address: '321 John Sartain St, Corpus Christi, TX 78401',
   },
   'plano': {
     name: 'Plano',
     county: 'Collin County',
     policePhone: '(972) 424-5678',
     policeWebsite: 'https://www.plano.gov/1183/Police',
+    address: '909 14th St, Plano, TX 75074',
   },
   'lubbock': {
     name: 'Lubbock',
     county: 'Lubbock County',
     policePhone: '(806) 775-2865',
     policeWebsite: 'https://www.mylubbock.us/departments/police',
+    address: '916 Texas Ave, Lubbock, TX 79401',
   },
   'beaumont': {
     name: 'Beaumont',
     county: 'Jefferson County',
     policePhone: '(409) 832-1234',
     policeWebsite: 'https://www.beaumonttexas.gov/departments/police',
+    address: '255 College St, Beaumont, TX 77701',
   },
-  // Adding more cities with police departments
+  // Adding more cities with police departments and addresses
   'orange': {
     name: 'Orange',
     county: 'Orange County',
     policePhone: '(409) 883-1026',
     policeWebsite: 'https://www.orangetexas.net/police',
+    address: '1212 W Park Ave, Orange, TX 77630',
   },
   'nederland': {
     name: 'Nederland',
     county: 'Jefferson County',
     policePhone: '(409) 722-4965',
     policeWebsite: 'https://www.ci.nederland.tx.us/departments/police',
+    address: '1400 Boston Ave, Nederland, TX 77627',
   },
   'groves': {
     name: 'Groves',
     county: 'Jefferson County',
     policePhone: '(409) 962-0244',
     policeWebsite: 'https://www.grovescity.com/police',
+    address: '6161 Madison Ave, Groves, TX 77619',
   },
   'galveston': {
     name: 'Galveston',
     county: 'Galveston County',
     policePhone: '(409) 765-3702',
     policeWebsite: 'https://www.galvestontx.gov/police',
+    address: '823 Rosenberg Ave, Galveston, TX 77550',
   },
   'tyler': {
     name: 'Tyler',
     county: 'Smith County',
     policePhone: '(903) 531-1000',
     policeWebsite: 'https://www.cityoftyler.org/departments/police',
+    address: '405 Martin Walker Dr, Tyler, TX 75702',
   },
   'waco': {
     name: 'Waco',
     county: 'McLennan County',
     policePhone: '(254) 750-7500',
     policeWebsite: 'https://www.waco-texas.com/departments/police',
+    address: '3115 Pine Ave, Waco, TX 76708',
   },
   'brownsville': {
     name: 'Brownsville',
     county: 'Cameron County',
     policePhone: '(956) 548-7000',
     policeWebsite: 'https://www.cob.us/departments/police',
+    address: '600 E Jackson St, Brownsville, TX 78520',
   },
   'laredo': {
     name: 'Laredo',
     county: 'Webb County',
     policePhone: '(956) 795-2800',
     policeWebsite: 'https://www.cityoflaredo.com/police',
+    address: '4712 Maher Ave, Laredo, TX 78041',
   },
   'college station': {
     name: 'College Station',
     county: 'Brazos County',
     policePhone: '(979) 764-3600',
     policeWebsite: 'https://www.cstx.gov/departments/police',
+    address: '1100 Krenek Tap Rd, College Station, TX 77840',
   },
   'bryan': {
     name: 'Bryan',
     county: 'Brazos County',
     policePhone: '(979) 209-5300',
     policeWebsite: 'https://www.bryantx.gov/departments/police',
+    address: '303 E 29th St, Bryan, TX 77803',
+  },
+  'vidor': {
+    name: 'Vidor',
+    county: 'Orange County',
+    policePhone: '(409) 769-4411',
+    policeWebsite: 'https://www.vidortx.com/police',
+    address: '1395 N Main St, Vidor, TX 77662',
+  },
+  'bridge city': {
+    name: 'Bridge City',
+    county: 'Orange County',
+    policePhone: '(409) 735-4503',
+    policeWebsite: 'https://www.bridgecitytx.com/police',
+    address: '260 Raceway Dr, Bridge City, TX 77611',
+  },
+  'west orange': {
+    name: 'West Orange',
+    county: 'Orange County',
+    policePhone: '(409) 883-4661',
+    policeWebsite: 'https://www.westorangetx.com/police',
+    address: '2700 Western Ave, West Orange, TX 77630',
+  },
+  'pinehurst': {
+    name: 'Pinehurst',
+    county: 'Orange County',
+    policePhone: '(409) 886-4111',
+    policeWebsite: 'https://www.pinehurstcity.com/police',
+    address: '3730 Magnolia St, Pinehurst, TX 77362',
   },
 };
 
@@ -312,6 +401,7 @@ export class JurisdictionService {
             type: 'Police Department',
             phone: cityResult.policePhone,
             website: cityResult.policeWebsite,
+            address: cityResult.address,
           },
         };
       } else {
@@ -595,20 +685,22 @@ export class JurisdictionService {
    * Generate contact information for cities not in the database
    */
   private static generateCityContactInfo(cityName: string, countyName: string): CityData {
-    // Get area code for the county
-    const areaCode = this.getAreaCodeForCounty(countyName);
-    
-    // Generate likely phone number (main city hall, which can transfer to police)
-    const phoneNumber = this.generateCityHallPhone(areaCode);
+    // For unknown cities, provide guidance instead of fake phone numbers
+    const searchGuidance = this.getSearchSuggestions(cityName, countyName);
     
     // Generate likely website URL
     const website = this.generateLikelyWebsite(cityName);
     
+    // Provide helpful search instruction instead of fake number
+    const phoneGuidance = `Call 411 or search: ${searchGuidance.phoneSearch[0]}`;
+    const addressGuidance = `Search "${cityName} Texas police department address" or visit city hall`;
+    
     return {
       name: cityName,
       county: countyName,
-      policePhone: phoneNumber,
+      policePhone: phoneGuidance,
       policeWebsite: website,
+      address: addressGuidance,
     };
   }
 
@@ -706,4 +798,5 @@ export class JurisdictionService {
   static clearSearchCache(): void {
     this.cityContactCache.clear();
   }
+}
 }
