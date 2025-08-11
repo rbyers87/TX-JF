@@ -249,3 +249,143 @@ export class WebSearchService {
       'harris': ['713', '281', '832'],
       'dallas': ['214', '469', '972', '945'],
       'tarrant': ['817', '682'],
+      'bexar': ['210', '726'],
+      'travis': ['512', '737'],
+      'jefferson': ['409'],
+      'collin': ['214', '469', '972', '945'],
+      'denton': ['940', '469'],
+      'fort_bend': ['281', '832', '713'],
+      'williamson': ['512', '737'],
+      'el_paso': ['915'],
+      'nueces': ['361'],
+      'lubbock': ['806'],
+      'galveston': ['409', '832'],
+      'montgomery': ['281', '832', '936'],
+      'hidalgo': ['956'],
+      'cameron': ['956'],
+      'bell': ['254'],
+      'webb': ['956'],
+      'mclennan': ['254'],
+      'brazoria': ['281', '832', '409'],
+      'ellis': ['214', '469', '972'],
+      'johnson': ['817', '682'],
+      'guadalupe': ['830'],
+      'hays': ['512', '737'],
+      'kaufman': ['214', '469', '972'],
+      'rockwall': ['214', '469', '972'],
+      'smith': ['903'],
+      'brazos': ['979'],
+      'liberty': ['281', '832', '936'],
+      'orange': ['409'],
+      'chambers': ['281', '832', '409']
+    };
+
+    const countyKey = countyName.toLowerCase().replace(' county', '').replace(' ', '_');
+    const areaCodes = areaCodeMap[countyKey];
+    
+    if (areaCodes && areaCodes.length > 0) {
+      // Use the first (most common) area code for the county
+      const areaCode = areaCodes[0];
+      return `Search "${cityName} Texas police ${areaCode}" for phone number`;
+    }
+
+    // Default Texas area codes if county not found
+    return `Search "${cityName} Texas police department phone number"`;
+  }
+
+  /**
+   * Generate a likely website URL
+   */
+  private static generateLikelyWebsite(cityName: string): string {
+    const citySlug = cityName.toLowerCase().replace(/\s+/g, '').replace(/[^a-z0-9]/g, '');
+    
+    // Most common pattern for Texas cities
+    return `https://www.cityof${citySlug}.com`;
+  }
+
+  /**
+   * Get search suggestions for finding contact information
+   */
+  static getSearchSuggestions(cityName: string, countyName: string): {
+    phoneSearch: string[];
+    websiteSearch: string[];
+    generalSearch: string[];
+  } {
+    return {
+      phoneSearch: [
+        `"${cityName} Texas police department phone number"`,
+        `"${cityName} police ${countyName} phone"`,
+        `"${cityName} TX police contact"`,
+        `site:${cityName.toLowerCase().replace(/\s+/g, '')}.* police phone`
+      ],
+      websiteSearch: [
+        `"${cityName} Texas police department website"`,
+        `"city of ${cityName} police"`,
+        `"${cityName} TX police department official site"`,
+        `site:gov "${cityName}" police department`
+      ],
+      generalSearch: [
+        `"${cityName} Texas police department"`,
+        `"${cityName} ${countyName} police contact information"`,
+        `"${cityName} TX law enforcement"`,
+        `"${cityName} police chief" contact`
+      ]
+    };
+  }
+
+  /**
+   * Validate and format phone number
+   */
+  static validatePhoneNumber(phone: string): string | null {
+    if (!phone) return null;
+    
+    // Remove all non-digits
+    const digits = phone.replace(/\D/g, '');
+    
+    // Check for valid US phone number
+    if (digits.length === 10) {
+      return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+    } else if (digits.length === 11 && digits[0] === '1') {
+      return `(${digits.slice(1, 4)}) ${digits.slice(4, 7)}-${digits.slice(7)}`;
+    }
+    
+    return null;
+  }
+
+  /**
+   * Validate and format website URL
+   */
+  static validateWebsiteUrl(url: string): string | null {
+    if (!url) return null;
+    
+    try {
+      // Add protocol if missing
+      if (!url.startsWith('http://') && !url.startsWith('https://')) {
+        url = 'https://' + url;
+      }
+      
+      // Validate URL format
+      new URL(url);
+      return url;
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * Clear the search cache
+   */
+  static clearCache(): void {
+    this.cache.clear();
+  }
+
+  /**
+   * Get cache statistics
+   */
+  static getCacheStats(): { size: number; entries: string[] } {
+    return {
+      size: this.cache.size,
+      entries: Array.from(this.cache.keys())
+    };
+  }
+}
