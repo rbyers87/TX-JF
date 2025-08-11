@@ -147,17 +147,29 @@ interface GISFeature {
 
 interface GISResponse {
   features: GISFeature[];
+  error?: {
+    code: number;
+    message: string;
+  };
 }
 
 export class JurisdictionService {
-  private static readonly TXDOT_CITIES_URL = 'https://services.arcgis.com/KTcxiTD9dsQw4r7Z/arcgis/rest/services/Texas_Cities/FeatureServer/0/query';
-  private static readonly TXDOT_COUNTIES_URL = 'https://services.arcgis.com/KTcxiTD9dsQw4r7Z/arcgis/rest/services/Texas_County_Boundaries/FeatureServer/0/query';
+  // Updated API endpoints - using the correct TxDOT ArcGIS REST services
+  private static readonly TXDOT_CITIES_URL = 'https://services.arcgis.com/KTcxiTD9dsQw4r7Z/arcgis/rest/services/TxDOT_City_Boundaries/FeatureServer/0/query';
+  private static readonly TXDOT_COUNTIES_URL = 'https://services.arcgis.com/KTcxiTD9dsQw4r7Z/arcgis/rest/services/Texas_County_Boundaries_Detailed/FeatureServer/0/query';
+  
+  // Alternative endpoints if the above don't work
+  private static readonly FALLBACK_CITIES_URL = 'https://maps.dot.state.tx.us/arcgis/rest/services/General/Cities/MapServer/0/query';
+  private static readonly FALLBACK_COUNTIES_URL = 'https://maps.dot.state.tx.us/arcgis/rest/services/Boundaries/MapServer/1/query';
 
   static async getJurisdictionByCoordinates(
     latitude: number,
     longitude: number
   ): Promise<LocationData> {
     try {
+      console.log(`\n=== JURISDICTION LOOKUP ===`);
+      console.log(`Coordinates: ${latitude}, ${longitude}`);
+      
       // First check if location is within any city boundaries
       const cityResult = await this.findCityByGIS(latitude, longitude);
       
@@ -170,8 +182,12 @@ export class JurisdictionService {
         sheriffWebsite: 'https://www.dps.texas.gov',
       };
 
+      console.log(`City found: ${cityResult?.name || 'None'}`);
+      console.log(`County found: ${county.name}`);
+
       if (cityResult) {
         // City has jurisdiction - police department takes precedence
+        console.log(`JURISDICTION: City (${cityResult.name})`);
         return {
           coordinates: { latitude, longitude },
           city: cityResult,
@@ -186,6 +202,7 @@ export class JurisdictionService {
         };
       } else {
         // County has jurisdiction - sheriff's office
+        console.log(`JURISDICTION: County (${county.name})`);
         return {
           coordinates: { latitude, longitude },
           county,
@@ -208,142 +225,245 @@ export class JurisdictionService {
     latitude: number,
     longitude: number
   ): Promise<CityData | null> {
-    try {
-      console.log(`Querying city boundaries for coordinates: ${latitude}, ${longitude}`);
-      
-      const params = new URLSearchParams({
-        f: 'json',
-        geometry: `${longitude},${latitude}`,
-        geometryType: 'esriGeometryPoint',
-        inSR: '4326',
-        spatialRel: 'esriSpatialRelWithin',
-        outFields: '*',
-        returnGeometry: 'false',
-        where: '1=1',
-      });
+    console.log(`\n--- CITY LOOKUP ---`);
+    
+    // Try multiple API endpoints and approaches
+    const endpoints = [
+      this.TXDOT_CITIES_URL,
+      this.FALLBACK_CITIES_URL,
+      // Also try the Census Bureau API as a backup
+      'https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/Places_CouSub_ConCity_SubMCD/MapServer/0/query'
+    ];
 
-      const response = await fetch(`${this.TXDOT_CITIES_URL}?${params}`);
-      
-      if (!response.ok) {
-        console.error('City GIS API response not OK:', response.status, response.statusText);
-        throw new Error('Failed to query city boundaries');
-      }
-
-      const data: GISResponse = await response.json();
-      console.log('City GIS Response:', JSON.stringify(data, null, 2));
-
-      if (data.features && data.features.length > 0) {
-        const feature = data.features[0];
-        console.log('City feature attributes:', feature.attributes);
+    for (const [index, endpoint] of endpoints.entries()) {
+      try {
+        console.log(`Trying city endpoint ${index + 1}: ${endpoint}`);
         
-        // Try different possible field names for city
-        const cityName = feature.attributes.CITY_NM || 
-                        feature.attributes.NAME || 
-                        feature.attributes.CITY_NAME ||
-                        feature.attributes.City ||
-                        feature.attributes.CITYNAME;
+        const params = new URLSearchParams({
+          f: 'json',
+          geometry: `${longitude},${latitude}`,
+          geometryType: 'esriGeometryPoint',
+          inSR: '4326',
+          spatialRel: 'esriSpatialRelWithin',
+          outFields: '*',
+          returnGeometry: 'false',
+          where: '1=1',
+        });
+
+        const response = await fetch(`${endpoint}?${params}`, {
+          headers: {
+            'Accept': 'application/json',
+            'User-Agent': 'Texas Law Enforcement Jurisdiction App'
+          }
+        });
+
+        if (!response.ok) {
+          console.log(`Endpoint ${index + 1} failed: ${response.status} ${response.statusText}`);
+          continue;
+        }
+
+        const data: GISResponse = await response.json();
         
-        const countyName = feature.attributes.CNTY_NM || 
-                          feature.attributes.COUNTY || 
-                          feature.attributes.COUNTY_NAME ||
-                          feature.attributes.County;
+        if (data.error) {
+          console.log(`API Error from endpoint ${index + 1}:`, data.error);
+          continue;
+        }
 
-        console.log(`Found city: ${cityName}, county: ${countyName}`);
+        console.log(`Endpoint ${index + 1} response:`, {
+          featureCount: data.features?.length || 0,
+          firstFeature: data.features?.[0]?.attributes || null
+        });
 
-        if (cityName) {
-          // Look up city data from our database
-          const cityKey = cityName.toLowerCase();
-          const cityData = TEXAS_CITIES[cityKey];
+        if (data.features && data.features.length > 0) {
+          const feature = data.features[0];
+          const attrs = feature.attributes;
+          
+          // Try various field name combinations based on different data sources
+          const possibleCityFields = [
+            'CITY_NM', 'NAME', 'CITY_NAME', 'City', 'CITYNAME', 'NAMELSAD',
+            'NAME10', 'GEONAME', 'CITY_FIPS', 'PLACE_NAME', 'FULLNAME'
+          ];
+          
+          const possibleCountyFields = [
+            'CNTY_NM', 'COUNTY', 'COUNTY_NAME', 'County', 'COUNTYNAME',
+            'COUNTYFP', 'CNTY_FIPS', 'STATEFP'
+          ];
 
-          if (cityData) {
-            return cityData;
-          } else {
-            // Return basic city info if not in our database
-            return {
-              name: cityName,
-              county: countyName || 'Unknown County',
-              policePhone: undefined,
-              policeWebsite: undefined,
-            };
+          let cityName = null;
+          let countyName = null;
+
+          // Find city name
+          for (const field of possibleCityFields) {
+            if (attrs[field] && typeof attrs[field] === 'string' && attrs[field].trim()) {
+              cityName = attrs[field].trim();
+              console.log(`Found city name in field '${field}': ${cityName}`);
+              break;
+            }
+          }
+
+          // Find county name
+          for (const field of possibleCountyFields) {
+            if (attrs[field] && typeof attrs[field] === 'string' && attrs[field].trim()) {
+              countyName = attrs[field].trim();
+              console.log(`Found county name in field '${field}': ${countyName}`);
+              break;
+            }
+          }
+
+          if (cityName) {
+            // Clean up city name - remove state suffixes and common prefixes
+            cityName = cityName.replace(/, TX$/, '').replace(/, Texas$/, '').replace(/^City of /, '');
+            
+            // Special handling for Port Arthur
+            if (cityName.toLowerCase().includes('port arthur')) {
+              cityName = 'Port Arthur';
+            }
+
+            console.log(`Final city name: ${cityName}`);
+
+            // Look up city data from our database
+            const cityKey = cityName.toLowerCase();
+            const cityData = TEXAS_CITIES[cityKey];
+
+            if (cityData) {
+              console.log(`Found city in database: ${cityData.name}`);
+              return cityData;
+            } else {
+              console.log(`City not in database, returning basic info`);
+              // Return basic city info if not in our database
+              return {
+                name: cityName,
+                county: countyName || 'Unknown County',
+                policePhone: undefined,
+                policeWebsite: undefined,
+              };
+            }
           }
         }
+      } catch (error) {
+        console.error(`Error with city endpoint ${index + 1}:`, error);
+        continue;
       }
-
-      return null;
-    } catch (error) {
-      console.error('Error querying city boundaries:', error);
-      return null;
     }
+
+    console.log('No city found at coordinates');
+    return null;
   }
 
   private static async findCountyByGIS(
     latitude: number,
     longitude: number
   ): Promise<CountyData | null> {
-    try {
-      console.log(`Querying county boundaries for coordinates: ${latitude}, ${longitude}`);
-      
-      const params = new URLSearchParams({
-        f: 'json',
-        geometry: `${longitude},${latitude}`,
-        geometryType: 'esriGeometryPoint',
-        inSR: '4326',
-        spatialRel: 'esriSpatialRelWithin',
-        outFields: '*',
-        returnGeometry: 'false',
-        where: '1=1',
-      });
+    console.log(`\n--- COUNTY LOOKUP ---`);
+    
+    const endpoints = [
+      this.TXDOT_COUNTIES_URL,
+      this.FALLBACK_COUNTIES_URL,
+      // Census Bureau backup
+      'https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/State_County/MapServer/1/query'
+    ];
 
-      const response = await fetch(`${this.TXDOT_COUNTIES_URL}?${params}`);
-      
-      if (!response.ok) {
-        console.error('County GIS API response not OK:', response.status, response.statusText);
-        throw new Error('Failed to query county boundaries');
-      }
-
-      const data: GISResponse = await response.json();
-      console.log('County GIS Response:', JSON.stringify(data, null, 2));
-
-      if (data.features && data.features.length > 0) {
-        const feature = data.features[0];
-        console.log('County feature attributes:', feature.attributes);
+    for (const [index, endpoint] of endpoints.entries()) {
+      try {
+        console.log(`Trying county endpoint ${index + 1}: ${endpoint}`);
         
-        // Try different possible field names for county
-        const countyName = feature.attributes.CNTY_NM || 
-                          feature.attributes.NAME || 
-                          feature.attributes.COUNTY_NAME ||
-                          feature.attributes.County ||
-                          feature.attributes.COUNTYNAME;
+        const params = new URLSearchParams({
+          f: 'json',
+          geometry: `${longitude},${latitude}`,
+          geometryType: 'esriGeometryPoint',
+          inSR: '4326',
+          spatialRel: 'esriSpatialRelWithin',
+          outFields: '*',
+          returnGeometry: 'false',
+          where: '1=1',
+        });
 
-        console.log(`Found county: ${countyName}`);
+        const response = await fetch(`${endpoint}?${params}`, {
+          headers: {
+            'Accept': 'application/json',
+            'User-Agent': 'Texas Law Enforcement Jurisdiction App'
+          }
+        });
 
-        if (countyName) {
-          // Look up county data from our database
-          const countyKey = countyName.toLowerCase().replace(' county', '').replace(' ', '_');
-          const countyData = TEXAS_COUNTIES[countyKey];
+        if (!response.ok) {
+          console.log(`County endpoint ${index + 1} failed: ${response.status} ${response.statusText}`);
+          continue;
+        }
 
-          if (countyData) {
-            return countyData;
-          } else {
-            // Return basic county info if not in our database
-            return {
-              name: countyName,
-              sheriffPhone: undefined,
-              sheriffWebsite: undefined,
-            };
+        const data: GISResponse = await response.json();
+        
+        if (data.error) {
+          console.log(`County API Error from endpoint ${index + 1}:`, data.error);
+          continue;
+        }
+
+        console.log(`County endpoint ${index + 1} response:`, {
+          featureCount: data.features?.length || 0,
+          firstFeature: data.features?.[0]?.attributes || null
+        });
+
+        if (data.features && data.features.length > 0) {
+          const feature = data.features[0];
+          const attrs = feature.attributes;
+          
+          // Try various county field name combinations
+          const possibleCountyFields = [
+            'CNTY_NM', 'NAME', 'COUNTY_NAME', 'County', 'COUNTYNAME',
+            'NAMELSAD', 'NAME10', 'GEONAME', 'FULLNAME', 'COUNTY_FIPS'
+          ];
+
+          let countyName = null;
+
+          // Find county name
+          for (const field of possibleCountyFields) {
+            if (attrs[field] && typeof attrs[field] === 'string' && attrs[field].trim()) {
+              countyName = attrs[field].trim();
+              console.log(`Found county name in field '${field}': ${countyName}`);
+              break;
+            }
+          }
+
+          if (countyName) {
+            // Clean up county name
+            countyName = countyName.replace(/, TX$/, '').replace(/, Texas$/, '').replace(/ County$/, '');
+            
+            // Add "County" back if it was stripped
+            if (!countyName.toLowerCase().includes('county')) {
+              countyName += ' County';
+            }
+
+            console.log(`Final county name: ${countyName}`);
+
+            // Look up county data from our database
+            const countyKey = countyName.toLowerCase().replace(' county', '').replace(' ', '_');
+            const countyData = TEXAS_COUNTIES[countyKey];
+
+            if (countyData) {
+              console.log(`Found county in database: ${countyData.name}`);
+              return countyData;
+            } else {
+              console.log(`County not in database, returning basic info`);
+              // Return basic county info if not in our database
+              return {
+                name: countyName,
+                sheriffPhone: undefined,
+                sheriffWebsite: undefined,
+              };
+            }
           }
         }
+      } catch (error) {
+        console.error(`Error with county endpoint ${index + 1}:`, error);
+        continue;
       }
-
-      return null;
-    } catch (error) {
-      console.error('Error querying county boundaries:', error);
-      // Fallback to Texas DPS
-      return {
-        name: 'Texas',
-        sheriffPhone: '(512) 463-2000',
-        sheriffWebsite: 'https://www.dps.texas.gov',
-      };
     }
+
+    console.log('No county found, using Texas DPS fallback');
+    // Fallback to Texas DPS
+    return {
+      name: 'Texas',
+      sheriffPhone: '(512) 463-2000',
+      sheriffWebsite: 'https://www.dps.texas.gov',
+    };
   }
 }
