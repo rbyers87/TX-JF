@@ -1,4 +1,5 @@
 import { LocationData, CityData, CountyData } from '@/types/location';
+import { WebSearchService } from './webSearchService';
 
 // Texas Counties with Sheriff contact information
 const TEXAS_COUNTIES: Record<string, CountyData> = {
@@ -537,18 +538,16 @@ export class JurisdictionService {
             } else {
               console.log(`City not in database, generating contact information`);
               
-              // Check cache first
-              const cacheKey = cityName.toLowerCase();
-              if (this.cityContactCache.has(cacheKey)) {
-                console.log(`Found city in cache: ${cityName}`);
-                return this.cityContactCache.get(cacheKey)!;
-              }
-
-              // Generate contact information for unknown cities
-              const generatedCityData = this.generateCityContactInfo(cityName, countyName || 'Unknown County');
+              // Use web search service to find real contact information
+              const searchResult = await WebSearchService.searchPoliceInfo(cityName, countyName || 'Unknown County');
               
-              // Cache the result
-              this.cityContactCache.set(cacheKey, generatedCityData);
+              const generatedCityData: CityData = {
+                name: cityName,
+                county: countyName || 'Unknown County',
+                policePhone: searchResult.phone,
+                policeWebsite: searchResult.website,
+                address: `Search "${cityName} Texas police department address" online`
+              };
               
               console.log(`Generated contact info for ${cityName}:`, generatedCityData);
               
@@ -680,29 +679,6 @@ export class JurisdictionService {
       name: 'Texas',
       sheriffPhone: '(512) 463-2000',
       sheriffWebsite: 'https://www.dps.texas.gov',
-    };
-  }
-
-  /**
-   * Generate contact information for cities not in the database
-   */
-  private static generateCityContactInfo(cityName: string, countyName: string): CityData {
-    // For unknown cities, provide guidance instead of fake phone numbers
-    const searchGuidance = this.getSearchSuggestions(cityName, countyName);
-    
-    // Generate likely website URL
-    const website = this.generateLikelyWebsite(cityName);
-    
-    // Provide helpful search instruction instead of fake number
-    const phoneGuidance = `Call 411 or search: ${searchGuidance.phoneSearch[0]}`;
-    const addressGuidance = `Search "${cityName} Texas police department address" or visit city hall`;
-    
-    return {
-      name: cityName,
-      county: countyName,
-      policePhone: phoneGuidance,
-      policeWebsite: website,
-      address: addressGuidance,
     };
   }
 
