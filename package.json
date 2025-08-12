@@ -47,6 +47,7 @@
   "devDependencies": {
     "@babel/core": "^7.25.2",
     "@types/react": "~19.0.10",
+    "gh-pages": "^6.3.0",
     "typescript": "~5.8.3"
   }
 }
