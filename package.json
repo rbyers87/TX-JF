@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "EXPO_NO_TELEMETRY=1 expo start",
     "build:web": "expo export --platform web",
+    "predeploy": "npm run build:web",
+    "deploy": "gh-pages -d dist",
     "lint": "expo lint"
   },
   "dependencies": {
