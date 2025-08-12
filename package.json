@@ -5,9 +5,7 @@
   "private": true,
   "scripts": {
     "dev": "EXPO_NO_TELEMETRY=1 expo start",
-    "build:web": "expo export --platform web",
-    "predeploy": "npm run build:web",
-    "deploy": "gh-pages -d dist",
+    "build:web": "expo export --platform web --output-dir dist",
     "lint": "expo lint"
   },
   "dependencies": {
@@ -47,7 +45,6 @@
   "devDependencies": {
     "@babel/core": "^7.25.2",
     "@types/react": "~19.0.10",
-    "gh-pages": "^6.3.0",
     "typescript": "~5.8.3"
   }
 }
