@@ -140,7 +140,9 @@ export default function SearchScreen() {
               <Text style={styles.addressText}>{searchedAddress}</Text>
             </View>
 
-            <JurisdictionCard jurisdiction={locationData} />
+            <View style={styles.jurisdictionContainer}>
+              <JurisdictionCard jurisdiction={locationData} />
+            </View>
           </View>
         )}
 
@@ -299,6 +301,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#1f2937',
     marginTop: 4,
+  },
+  jurisdictionContainer: {
+    marginTop: 8,
   },
   emergencyNotice: {
     flexDirection: 'row',
