@@ -1,36 +1,29 @@
 name: Deploy to GitHub Pages
-
 on:
   push:
     branches:
       - main
   workflow_dispatch: # allows manual trigger
-
 permissions:
   contents: write
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 18
-
       - name: Install dependencies
         run: npm install
-
       - name: Clean old build
         run: rm -rf dist
-
       - name: Build Expo web app
         run: npm run build:web
-
+      - name: Add .nojekyll file
+        run: touch dist/.nojekyll
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
