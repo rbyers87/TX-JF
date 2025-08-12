@@ -70,6 +70,12 @@ export function JurisdictionCard({ jurisdiction }: JurisdictionCardProps) {
           </View>
         )}
 
+        {jurisdiction.primaryAgency.address && (
+          <View style={styles.addressContainer}>
+            <Text style={styles.addressLabel}>Address:</Text>
+            <Text style={styles.addressText}>{jurisdiction.primaryAgency.address}</Text>
+          </View>
+        )}
         {!jurisdiction.city && (
           <View style={styles.locationContainer}>
             <MapPin size={16} color="#6b7280" />
@@ -172,6 +178,25 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#4b5563',
     marginLeft: 6,
+  },
+  addressContainer: {
+    marginTop: 12,
+    padding: 12,
+    backgroundColor: '#f8fafc',
+    borderRadius: 8,
+  },
+  addressLabel: {
+    fontSize: 12,
+    color: '#6b7280',
+    fontWeight: '600',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    marginBottom: 4,
+  },
+  addressText: {
+    fontSize: 14,
+    color: '#374151',
+    lineHeight: 20,
   },
   contactContainer: {
     padding: 16,

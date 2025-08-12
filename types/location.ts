@@ -8,12 +8,14 @@ export interface CityData {
   county: string;
   policePhone?: string;
   policeWebsite?: string;
+  address?: string;
 }
 
 export interface CountyData {
   name: string;
   sheriffPhone?: string;
   sheriffWebsite?: string;
+  address?: string;
 }
 
 export interface LocationData {
@@ -27,6 +29,7 @@ export interface LocationData {
     type: 'Police Department' | 'Sheriff\'s Office';
     phone?: string;
     website?: string;
+    address?: string;
   };
 }
 

@@ -402,6 +402,7 @@ export class JurisdictionService {
             phone: cityResult.policePhone,
             website: cityResult.policeWebsite,
             address: cityResult.address,
+            address: cityResult.address,
           },
         };
       } else {
@@ -416,6 +417,7 @@ export class JurisdictionService {
             type: 'Sheriff\'s Office',
             phone: county.sheriffPhone,
             website: county.sheriffWebsite,
+            address: county.address,
           },
         };
       }
