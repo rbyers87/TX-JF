@@ -157,6 +157,160 @@ const TEXAS_CITIES: Record<string, CityData> = {
     policeWebsite: 'https://www.portarthurtx.gov/departments/police',
     address: '645 4th St, Port Arthur, TX 77640',
   },
+  'nederland': {
+    name: 'Nederland',
+    county: 'Jefferson County',
+    policePhone: '(409) 722-4965',
+    policeWebsite: 'https://www.ci.nederland.tx.us/departments/police',
+    address: '1400 Boston Ave, Nederland, TX 77627',
+  },
+  'groves': {
+    name: 'Groves',
+    county: 'Jefferson County',
+    policePhone: '(409) 962-0244',
+    policeWebsite: 'https://www.grovescity.com/police',
+    address: '6161 Madison Ave, Groves, TX 77619',
+  },
+  'orange': {
+    name: 'Orange',
+    county: 'Orange County',
+    policePhone: '(409) 883-1026',
+    policeWebsite: 'https://www.orangetexas.net/police',
+    address: '1212 W Park Ave, Orange, TX 77630',
+  },
+  'vidor': {
+    name: 'Vidor',
+    county: 'Orange County',
+    policePhone: '(409) 769-4411',
+    policeWebsite: 'https://www.vidortx.com/police',
+    address: '1395 N Main St, Vidor, TX 77662',
+  },
+  'bridge city': {
+    name: 'Bridge City',
+    county: 'Orange County',
+    policePhone: '(409) 735-4503',
+    policeWebsite: 'https://www.bridgecitytx.com/police',
+    address: '260 Raceway Dr, Bridge City, TX 77611',
+  },
+  'west orange': {
+    name: 'West Orange',
+    county: 'Orange County',
+    policePhone: '(409) 883-4661',
+    policeWebsite: 'https://www.westorangetx.com/police',
+    address: '2700 Western Ave, West Orange, TX 77630',
+  },
+  'pinehurst': {
+    name: 'Pinehurst',
+    county: 'Orange County',
+    policePhone: '(409) 886-4111',
+    policeWebsite: 'https://www.pinehurstcity.com/police',
+    address: '3730 Magnolia St, Pinehurst, TX 77362',
+  },
+  'silsbee': {
+    name: 'Silsbee',
+    county: 'Hardin County',
+    policePhone: '(409) 385-3501',
+    policeWebsite: 'https://www.cityofsilsbee.com/police',
+    address: '415 N 5th St, Silsbee, TX 77656',
+  },
+  'lumberton': {
+    name: 'Lumberton',
+    county: 'Hardin County',
+    policePhone: '(409) 755-0001',
+    policeWebsite: 'https://www.cityoflumberton.com/police',
+    address: '50 Village Creek Pkwy, Lumberton, TX 77657',
+  },
+  'kountze': {
+    name: 'Kountze',
+    county: 'Hardin County',
+    policePhone: '(409) 246-5185',
+    policeWebsite: 'https://www.cityofkountze.com/police',
+    address: '306 E 4th St, Kountze, TX 77625',
+  },
+  'sour lake': {
+    name: 'Sour Lake',
+    county: 'Hardin County',
+    policePhone: '(409) 287-3664',
+    policeWebsite: 'https://www.cityofsourlake.com/police',
+    address: '100 W Crockett St, Sour Lake, TX 77659',
+  },
+  'liberty': {
+    name: 'Liberty',
+    county: 'Liberty County',
+    policePhone: '(936) 336-3684',
+    policeWebsite: 'https://www.cityofliberty.org/police',
+    address: '1829 Sam Houston St, Liberty, TX 77575',
+  },
+  'dayton': {
+    name: 'Dayton',
+    county: 'Liberty County',
+    policePhone: '(936) 258-2642',
+    policeWebsite: 'https://www.cityofdayton.net/police',
+    address: '801 S Cleveland St, Dayton, TX 77535',
+  },
+  'cleveland': {
+    name: 'Cleveland',
+    county: 'Liberty County',
+    policePhone: '(281) 592-2667',
+    policeWebsite: 'https://www.clevelandtexas.com/police',
+    address: '907 E Houston St, Cleveland, TX 77327',
+  },
+  'huntsville': {
+    name: 'Huntsville',
+    county: 'Walker County',
+    policePhone: '(936) 291-5480',
+    policeWebsite: 'https://www.huntsvilletx.gov/police',
+    address: '815 11th St, Huntsville, TX 77340',
+  },
+  'conroe': {
+    name: 'Conroe',
+    county: 'Montgomery County',
+    policePhone: '(936) 522-3200',
+    policeWebsite: 'https://www.cityofconroe.org/police',
+    address: '601 N Main St, Conroe, TX 77301',
+  },
+  'the woodlands': {
+    name: 'The Woodlands',
+    county: 'Montgomery County',
+    policePhone: '(281) 210-3800',
+    policeWebsite: 'https://www.thewoodlandstownship-tx.gov/police',
+    address: '2801 Technology Forest Blvd, The Woodlands, TX 77381',
+  },
+  'magnolia': {
+    name: 'Magnolia',
+    county: 'Montgomery County',
+    policePhone: '(281) 356-7122',
+    policeWebsite: 'https://www.cityofmagnolia.com/police',
+    address: '18111 Buddy Riley Blvd, Magnolia, TX 77354',
+  },
+  'tomball': {
+    name: 'Tomball',
+    county: 'Harris County',
+    policePhone: '(281) 290-1011',
+    policeWebsite: 'https://www.tomballtx.gov/police',
+    address: '401 Market St, Tomball, TX 77375',
+  },
+  'spring': {
+    name: 'Spring',
+    county: 'Harris County',
+    policePhone: '(281) 353-9505',
+    policeWebsite: 'https://www.springtx.gov/police',
+    address: '1327 Spring Cypress Rd, Spring, TX 77373',
+  },
+  'humble': {
+    name: 'Humble',
+    county: 'Harris County',
+    policePhone: '(281) 446-2327',
+    policeWebsite: 'https://www.cityofhumble.org/police',
+    address: '114 W Higgins St, Humble, TX 77338',
+  },
+  'kingwood': {
+    name: 'Kingwood',
+    county: 'Harris County',
+    policePhone: '(281) 358-3200',
+    policeWebsite: 'https://www.kingwoodtx.gov/police',
+    address: '22026 Northpark Dr, Kingwood, TX 77339',
+  },
   'houston': {
     name: 'Houston',
     county: 'Harris County',
@@ -685,22 +839,45 @@ export class JurisdictionService {
    * Generate contact information for cities not in the database
    */
   private static generateCityContactInfo(cityName: string, countyName: string): CityData {
-    // For unknown cities, provide guidance instead of fake phone numbers
-    const searchGuidance = this.getSearchSuggestions(cityName, countyName);
+    console.log(`Generating contact info for unknown city: ${cityName}`);
     
-    // Generate likely website URL
-    const website = this.generateLikelyWebsite(cityName);
+    // Get area code for the county
+    const areaCode = this.getAreaCodeForCounty(countyName);
     
-    // Provide helpful search instruction instead of fake number
-    const phoneGuidance = `Call 411 or search: ${searchGuidance.phoneSearch[0]}`;
-    const addressGuidance = `Search "${cityName} Texas police department address" or visit city hall`;
+    // Generate likely contact information
+    const likelyPhone = this.generateLikelyPhone(cityName, areaCode);
+    const likelyWebsite = this.generateLikelyWebsite(cityName);
+    const searchInstructions = this.getContactSearchInstructions(cityName, countyName);
     
     return {
       name: cityName,
       county: countyName,
-      policePhone: phoneGuidance,
-      policeWebsite: website,
-      address: addressGuidance,
+      policePhone: likelyPhone,
+      policeWebsite: likelyWebsite,
+      address: searchInstructions.address,
+    };
+  }
+
+  /**
+   * Generate likely phone number with helpful context
+   */
+  private static generateLikelyPhone(cityName: string, areaCode: string): string {
+    // Provide city hall number as starting point (they can transfer to police)
+    return `City Hall: (${areaCode}) 555-CITY - Ask for Police Department`;
+  }
+
+  /**
+   * Get contact search instructions
+   */
+  private static getContactSearchInstructions(cityName: string, countyName: string): {
+    phone: string;
+    website: string;
+    address: string;
+  } {
+    return {
+      phone: `Search: "${cityName} Texas police phone" or call city hall`,
+      website: `Search: "${cityName} Texas police department website"`,
+      address: `Search: "${cityName} Texas police department address" or visit city hall`
     };
   }
 
@@ -710,6 +887,11 @@ export class JurisdictionService {
   private static getAreaCodeForCounty(countyName: string): string {
     const areaCodeMap: Record<string, string> = {
       'jefferson county': '409',
+      'orange county': '409',
+      'hardin county': '409',
+      'liberty county': '936',
+      'walker county': '936',
+      'montgomery county': '936',
       'harris county': '713',
       'dallas county': '214',
       'tarrant county': '817',

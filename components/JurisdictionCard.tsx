@@ -101,6 +101,15 @@ export function JurisdictionCard({ jurisdiction }: JurisdictionCardProps) {
           </TouchableOpacity>
         )}
 
+        {!jurisdiction.primaryAgency.phone && (
+          <View style={styles.searchInstructionContainer}>
+            <Text style={styles.searchInstructionTitle}>Contact Information:</Text>
+            <Text style={styles.searchInstructionText}>
+              Call city hall and ask to be transferred to the police department, or search online for "{jurisdiction.city?.name || jurisdiction.county.name} Texas police phone number"
+            </Text>
+          </View>
+        )}
+
         {jurisdiction.primaryAgency.website && (
           <TouchableOpacity
             style={styles.websiteButton}
@@ -247,5 +256,24 @@ const styles = StyleSheet.create({
     color: '#991b1b',
     textAlign: 'center',
     fontWeight: '500',
+  },
+  searchInstructionContainer: {
+    backgroundColor: '#fef3c7',
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#f59e0b',
+  },
+  searchInstructionTitle: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#92400e',
+    marginBottom: 4,
+  },
+  searchInstructionText: {
+    fontSize: 12,
+    color: '#92400e',
+    lineHeight: 16,
   },
 });
