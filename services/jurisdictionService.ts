@@ -1,5 +1,4 @@
 import { LocationData, CityData, CountyData } from '@/types/location';
-import { WebSearchService } from './webSearchService';
 
 // Texas Counties with Sheriff contact information
 const TEXAS_COUNTIES: Record<string, CountyData> = {
@@ -7,145 +6,56 @@ const TEXAS_COUNTIES: Record<string, CountyData> = {
     name: 'Jefferson County',
     sheriffPhone: '(409) 835-8411',
     sheriffWebsite: 'https://www.co.jefferson.tx.us/sheriff',
-    address: '1001 Pearl St, Beaumont, TX 77701',
   },
   'harris': {
     name: 'Harris County',
     sheriffPhone: '(713) 755-7628',
     sheriffWebsite: 'https://www.hcso.org',
-    address: '1200 Baker St, Houston, TX 77002',
   },
   'dallas': {
     name: 'Dallas County',
     sheriffPhone: '(214) 749-8641',
     sheriffWebsite: 'https://www.dallascounty.org/departments/sheriff',
-    address: '133 N Industrial Blvd, Dallas, TX 75207',
   },
   'tarrant': {
     name: 'Tarrant County',
     sheriffPhone: '(817) 884-1213',
     sheriffWebsite: 'https://www.tarrantcounty.com/en/sheriff',
-    address: '200 Taylor St, Fort Worth, TX 76196',
   },
   'bexar': {
     name: 'Bexar County',
     sheriffPhone: '(210) 335-6000',
     sheriffWebsite: 'https://www.bexar.org/1250/Sheriffs-Office',
-    address: '200 N Comal St, San Antonio, TX 78207',
   },
   'travis': {
     name: 'Travis County',
     sheriffPhone: '(512) 854-9770',
     sheriffWebsite: 'https://www.tcso.org',
-    address: '5555 Airport Blvd, Austin, TX 78751',
   },
   'collin': {
     name: 'Collin County',
     sheriffPhone: '(972) 547-5100',
     sheriffWebsite: 'https://www.collincountytx.gov/sheriff',
-    address: '4300 Community Ave, McKinney, TX 75071',
   },
   'denton': {
     name: 'Denton County',
     sheriffPhone: '(940) 349-1600',
     sheriffWebsite: 'https://www.dentoncounty.gov/Departments/Sheriff',
-    address: '127 N Woodrow Ln, Denton, TX 76205',
   },
   'fort_bend': {
     name: 'Fort Bend County',
     sheriffPhone: '(281) 341-4665',
     sheriffWebsite: 'https://www.fbcso.org',
-    address: '1410 Ransom Rd, Richmond, TX 77469',
   },
   'williamson': {
     name: 'Williamson County',
     sheriffPhone: '(512) 943-1300',
     sheriffWebsite: 'https://www.wilco.org/Departments/Sheriff',
-    address: '508 S Rock St, Georgetown, TX 78626',
   },
   'hidalgo': {
     name: 'Hidalgo County',
     sheriffPhone: '(956) 383-8114',
     sheriffWebsite: 'https://www.hidalgocounty.us/269/Sheriffs-Office',
-    address: '100 N Closner Blvd, Edinburg, TX 78539',
-  },
-  'el_paso': {
-    name: 'El Paso County',
-    sheriffPhone: '(915) 538-2008',
-    sheriffWebsite: 'https://www.epcounty.com/sheriff',
-    address: '3850 E Paisano Dr, El Paso, TX 79905',
-  },
-  'nueces': {
-    name: 'Nueces County',
-    sheriffPhone: '(361) 887-2222',
-    sheriffWebsite: 'https://www.nuecesco.com/sheriff',
-    address: '901 Leopard St, Corpus Christi, TX 78401',
-  },
-  'lubbock': {
-    name: 'Lubbock County',
-    sheriffPhone: '(806) 775-1400',
-    sheriffWebsite: 'https://www.lubbockcounty.gov/departments/sheriff',
-    address: '916 Main St, Lubbock, TX 79401',
-  },
-  'galveston': {
-    name: 'Galveston County',
-    sheriffPhone: '(409) 766-2322',
-    sheriffWebsite: 'https://www.galvestoncountysheriff.org',
-    address: '5600 39th St, Dickinson, TX 77539',
-  },
-  'montgomery': {
-    name: 'Montgomery County',
-    sheriffPhone: '(936) 760-5800',
-    sheriffWebsite: 'https://www.mctxsheriff.org',
-    address: '100 Community Center Dr, Conroe, TX 77301',
-  },
-  'brazoria': {
-    name: 'Brazoria County',
-    sheriffPhone: '(979) 864-2392',
-    sheriffWebsite: 'https://www.brazoriacountysheriff.org',
-    address: '111 E Locust St, Angleton, TX 77515',
-  },
-  'bell': {
-    name: 'Bell County',
-    sheriffPhone: '(254) 933-5412',
-    sheriffWebsite: 'https://www.bellcountytx.com/departments/sheriff',
-    address: '1201 Huey Bratcher Rd, Belton, TX 76513',
-  },
-  'mclennan': {
-    name: 'McLennan County',
-    sheriffPhone: '(254) 757-5049',
-    sheriffWebsite: 'https://www.mclennancountytx.gov/departments/sheriff',
-    address: '3121 E Loop 340, Waco, TX 76705',
-  },
-  'cameron': {
-    name: 'Cameron County',
-    sheriffPhone: '(956) 554-6700',
-    sheriffWebsite: 'https://www.cameroncountysheriff.org',
-    address: '7300 Old Alice Rd, Olmito, TX 78575',
-  },
-  'webb': {
-    name: 'Webb County',
-    sheriffPhone: '(956) 415-2878',
-    sheriffWebsite: 'https://www.webbcountytx.gov/sheriff',
-    address: '1110 Victoria St, Laredo, TX 78040',
-  },
-  'orange': {
-    name: 'Orange County',
-    sheriffPhone: '(409) 883-2612',
-    sheriffWebsite: 'https://www.orangecountytx.gov/departments/sheriff',
-    address: '123 6th St, Orange, TX 77630',
-  },
-  'smith': {
-    name: 'Smith County',
-    sheriffPhone: '(903) 566-6600',
-    sheriffWebsite: 'https://www.smith-county.com/sheriff',
-    address: '227 N Spring Ave, Tyler, TX 75702',
-  },
-  'brazos': {
-    name: 'Brazos County',
-    sheriffPhone: '(979) 361-4900',
-    sheriffWebsite: 'https://www.brazoscountytx.gov/sheriff',
-    address: '1755 Briarcrest Dr, Bryan, TX 77802',
   },
 };
 
@@ -156,183 +66,72 @@ const TEXAS_CITIES: Record<string, CityData> = {
     county: 'Jefferson County',
     policePhone: '(409) 983-8600',
     policeWebsite: 'https://www.portarthurtx.gov/departments/police',
-    address: '645 4th St, Port Arthur, TX 77640',
   },
   'houston': {
     name: 'Houston',
     county: 'Harris County',
     policePhone: '(713) 884-3131',
     policeWebsite: 'https://www.houstontx.gov/police',
-    address: '1200 Travis St, Houston, TX 77002',
   },
   'san antonio': {
     name: 'San Antonio',
     county: 'Bexar County',
     policePhone: '(210) 207-7273',
     policeWebsite: 'https://www.sanantonio.gov/SAPD',
-    address: '315 S Santa Rosa Ave, San Antonio, TX 78207',
   },
   'dallas': {
     name: 'Dallas',
     county: 'Dallas County',
     policePhone: '(214) 671-4282',
     policeWebsite: 'https://www.dallaspolice.net',
-    address: '1400 S Lamar St, Dallas, TX 75215',
   },
   'austin': {
     name: 'Austin',
     county: 'Travis County',
     policePhone: '(512) 974-5000',
     policeWebsite: 'https://www.austintexas.gov/department/police',
-    address: '715 E 8th St, Austin, TX 78701',
   },
   'fort worth': {
     name: 'Fort Worth',
     county: 'Tarrant County',
     policePhone: '(817) 392-4222',
     policeWebsite: 'https://www.fortworthtexas.gov/departments/police',
-    address: '350 W Belknap St, Fort Worth, TX 76102',
   },
   'el paso': {
     name: 'El Paso',
     county: 'El Paso County',
     policePhone: '(915) 212-4400',
     policeWebsite: 'https://www.elpasotexas.gov/police',
-    address: '911 N Raynor St, El Paso, TX 79901',
   },
   'arlington': {
     name: 'Arlington',
     county: 'Tarrant County',
     policePhone: '(817) 459-5700',
     policeWebsite: 'https://www.arlingtontx.gov/city_hall/departments/police',
-    address: '620 W Division St, Arlington, TX 76011',
   },
   'corpus christi': {
     name: 'Corpus Christi',
     county: 'Nueces County',
     policePhone: '(361) 886-2600',
     policeWebsite: 'https://www.cctexas.com/departments/police',
-    address: '321 John Sartain St, Corpus Christi, TX 78401',
   },
   'plano': {
     name: 'Plano',
     county: 'Collin County',
     policePhone: '(972) 424-5678',
     policeWebsite: 'https://www.plano.gov/1183/Police',
-    address: '909 14th St, Plano, TX 75074',
   },
   'lubbock': {
     name: 'Lubbock',
     county: 'Lubbock County',
     policePhone: '(806) 775-2865',
     policeWebsite: 'https://www.mylubbock.us/departments/police',
-    address: '916 Texas Ave, Lubbock, TX 79401',
   },
   'beaumont': {
     name: 'Beaumont',
     county: 'Jefferson County',
     policePhone: '(409) 832-1234',
     policeWebsite: 'https://www.beaumonttexas.gov/departments/police',
-    address: '255 College St, Beaumont, TX 77701',
-  },
-  // Adding more cities with police departments and addresses
-  'orange': {
-    name: 'Orange',
-    county: 'Orange County',
-    policePhone: '(409) 883-1026',
-    policeWebsite: 'https://www.orangetexas.net/police',
-    address: '1212 W Park Ave, Orange, TX 77630',
-  },
-  'nederland': {
-    name: 'Nederland',
-    county: 'Jefferson County',
-    policePhone: '(409) 722-4965',
-    policeWebsite: 'https://www.ci.nederland.tx.us/departments/police',
-    address: '1400 Boston Ave, Nederland, TX 77627',
-  },
-  'groves': {
-    name: 'Groves',
-    county: 'Jefferson County',
-    policePhone: '(409) 962-0244',
-    policeWebsite: 'https://www.grovescity.com/police',
-    address: '6161 Madison Ave, Groves, TX 77619',
-  },
-  'galveston': {
-    name: 'Galveston',
-    county: 'Galveston County',
-    policePhone: '(409) 765-3702',
-    policeWebsite: 'https://www.galvestontx.gov/police',
-    address: '823 Rosenberg Ave, Galveston, TX 77550',
-  },
-  'tyler': {
-    name: 'Tyler',
-    county: 'Smith County',
-    policePhone: '(903) 531-1000',
-    policeWebsite: 'https://www.cityoftyler.org/departments/police',
-    address: '405 Martin Walker Dr, Tyler, TX 75702',
-  },
-  'waco': {
-    name: 'Waco',
-    county: 'McLennan County',
-    policePhone: '(254) 750-7500',
-    policeWebsite: 'https://www.waco-texas.com/departments/police',
-    address: '3115 Pine Ave, Waco, TX 76708',
-  },
-  'brownsville': {
-    name: 'Brownsville',
-    county: 'Cameron County',
-    policePhone: '(956) 548-7000',
-    policeWebsite: 'https://www.cob.us/departments/police',
-    address: '600 E Jackson St, Brownsville, TX 78520',
-  },
-  'laredo': {
-    name: 'Laredo',
-    county: 'Webb County',
-    policePhone: '(956) 795-2800',
-    policeWebsite: 'https://www.cityoflaredo.com/police',
-    address: '4712 Maher Ave, Laredo, TX 78041',
-  },
-  'college station': {
-    name: 'College Station',
-    county: 'Brazos County',
-    policePhone: '(979) 764-3600',
-    policeWebsite: 'https://www.cstx.gov/departments/police',
-    address: '1100 Krenek Tap Rd, College Station, TX 77840',
-  },
-  'bryan': {
-    name: 'Bryan',
-    county: 'Brazos County',
-    policePhone: '(979) 209-5300',
-    policeWebsite: 'https://www.bryantx.gov/departments/police',
-    address: '303 E 29th St, Bryan, TX 77803',
-  },
-  'vidor': {
-    name: 'Vidor',
-    county: 'Orange County',
-    policePhone: '(409) 769-4411',
-    policeWebsite: 'https://www.vidortx.com/police',
-    address: '1395 N Main St, Vidor, TX 77662',
-  },
-  'bridge city': {
-    name: 'Bridge City',
-    county: 'Orange County',
-    policePhone: '(409) 735-4503',
-    policeWebsite: 'https://www.bridgecitytx.com/police',
-    address: '260 Raceway Dr, Bridge City, TX 77611',
-  },
-  'west orange': {
-    name: 'West Orange',
-    county: 'Orange County',
-    policePhone: '(409) 883-4661',
-    policeWebsite: 'https://www.westorangetx.com/police',
-    address: '2700 Western Ave, West Orange, TX 77630',
-  },
-  'pinehurst': {
-    name: 'Pinehurst',
-    county: 'Orange County',
-    policePhone: '(409) 886-4111',
-    policeWebsite: 'https://www.pinehurstcity.com/police',
-    address: '3730 Magnolia St, Pinehurst, TX 77362',
   },
 };
 
@@ -402,8 +201,6 @@ export class JurisdictionService {
             type: 'Police Department',
             phone: cityResult.policePhone,
             website: cityResult.policeWebsite,
-            address: cityResult.address,
-            address: cityResult.address,
           },
         };
       } else {
@@ -418,7 +215,6 @@ export class JurisdictionService {
             type: 'Sheriff\'s Office',
             phone: county.sheriffPhone,
             website: county.sheriffWebsite,
-            address: county.address,
           },
         };
       }
@@ -486,7 +282,7 @@ export class JurisdictionService {
           const attrs = feature.attributes;
           
           // Try various field name combinations based on different data sources
-          let possibleCityFields = [
+          const possibleCityFields = [
             'CITY_NM', 'NAME', 'CITY_NAME', 'City', 'CITYNAME', 'NAMELSAD',
             'NAME10', 'GEONAME', 'CITY_FIPS', 'PLACE_NAME', 'FULLNAME'
           ];
@@ -499,11 +295,6 @@ export class JurisdictionService {
           let cityName = null;
           let countyName = null;
 
-          // Prioritize certain fields based on observed data structures
-          if (endpoint === this.TXDOT_CITIES_URL) {
-            possibleCityFields = ['CITY_NM', 'NAME', ...possibleCityFields];
-          }
-
           // Find city name
           for (const field of possibleCityFields) {
             if (attrs[field] && typeof attrs[field] === 'string' && attrs[field].trim()) {
@@ -511,11 +302,6 @@ export class JurisdictionService {
               console.log(`Found city name in field '${field}': ${cityName}`);
               break;
             }
-          }
-
-          // If city name is still null, try to extract from FULLNAME
-          if (!cityName && attrs['FULLNAME'] && typeof attrs['FULLNAME'] === 'string') {
-            cityName = attrs['FULLNAME'].split('/')[0].replace('City of ', '').trim();
           }
 
           // Find county name
@@ -529,7 +315,7 @@ export class JurisdictionService {
 
           if (cityName) {
             // Clean up city name - remove state suffixes and common prefixes
-            cityName = cityName.replace(/, TX$/, '').replace(/, Texas$/, '').replace(/^City of /, '').trim();
+            cityName = cityName.replace(/, TX$/, '').replace(/, Texas$/, '').replace(/^City of /, '');
             
             // Special handling for Port Arthur
             if (cityName.toLowerCase().includes('port arthur')) {
@@ -537,11 +323,6 @@ export class JurisdictionService {
             }
 
             console.log(`Final city name: ${cityName}`);
-
-            if (!cityName) {
-              console.log('City name is empty after cleanup, skipping city lookup.');
-              continue;
-            }
 
             // Look up city data from our database
             const cityKey = cityName.toLowerCase();
@@ -551,22 +332,22 @@ export class JurisdictionService {
               console.log(`Found city in database: ${cityData.name}`);
               return cityData;
             } else {
-              console.log(`City not in database, generating contact information via web search`);
+              console.log(`City not in database, searching online for contact info`);
               
-              // Use web search service to find real contact information
-              const searchResult = await WebSearchService.searchPoliceInfo(cityName, countyName || 'Unknown County');
+              // Check cache first
+              const cacheKey = cityName.toLowerCase();
+              if (this.cityContactCache.has(cacheKey)) {
+                console.log(`Found city in cache: ${cityName}`);
+                return this.cityContactCache.get(cacheKey)!;
+              }
+
+              // Search online for police department contact info
+              const searchedCityData = await this.searchCityPoliceInfo(cityName, countyName || 'Unknown County');
               
-              const generatedCityData: CityData = {
-                name: cityName.trim(),
-                county: countyName || 'Unknown County',
-                policePhone: searchResult.phone,
-                policeWebsite: searchResult.website,
-                address: `Search "${cityName} Texas police department address" online`
-              };
+              // Cache the result
+              this.cityContactCache.set(cacheKey, searchedCityData);
               
-              console.log(`Generated contact info for ${cityName}:`, generatedCityData);
-              
-              return generatedCityData;
+              return searchedCityData;
             }
           }
         }
@@ -643,3 +424,338 @@ export class JurisdictionService {
           ];
 
           let countyName = null;
+
+          // Find county name
+          for (const field of possibleCountyFields) {
+            if (attrs[field] && typeof attrs[field] === 'string' && attrs[field].trim()) {
+              countyName = attrs[field].trim();
+              console.log(`Found county name in field '${field}': ${countyName}`);
+              break;
+            }
+          }
+
+          if (countyName) {
+            // Clean up county name
+            countyName = countyName.replace(/, TX$/, '').replace(/, Texas$/, '').replace(/ County$/, '');
+            
+            // Add "County" back if it was stripped
+            if (!countyName.toLowerCase().includes('county')) {
+              countyName += ' County';
+            }
+
+            console.log(`Final county name: ${countyName}`);
+
+            // Look up county data from our database
+            const countyKey = countyName.toLowerCase().replace(' county', '').replace(' ', '_');
+            const countyData = TEXAS_COUNTIES[countyKey];
+
+            if (countyData) {
+              console.log(`Found county in database: ${countyData.name}`);
+              return countyData;
+            } else {
+              console.log(`County not in database, returning basic info`);
+              // Return basic county info if not in our database
+              return {
+                name: countyName,
+                sheriffPhone: undefined,
+                sheriffWebsite: undefined,
+              };
+            }
+          }
+        }
+      } catch (error) {
+        console.error(`Error with county endpoint ${index + 1}:`, error);
+        continue;
+      }
+    }
+
+    console.log('No county found, using Texas DPS fallback');
+    // Fallback to Texas DPS
+    return {
+      name: 'Texas',
+      sheriffPhone: '(512) 463-2000',
+      sheriffWebsite: 'https://www.dps.texas.gov',
+    };
+  }
+
+  /**
+   * Search online for police department contact information
+   */
+  private static async searchCityPoliceInfo(cityName: string, countyName: string): Promise<CityData> {
+    console.log(`Searching online for ${cityName} police department info`);
+    
+    try {
+      // Use a CORS-friendly search approach
+      const searchResult = await this.performWebSearch(cityName, countyName);
+      
+      if (searchResult.phone || searchResult.website) {
+        console.log(`Found contact info via search: phone=${searchResult.phone}, website=${searchResult.website}`);
+        return {
+          name: cityName,
+          county: countyName,
+          policePhone: searchResult.phone,
+          policeWebsite: searchResult.website,
+        };
+      }
+    } catch (error) {
+      console.error(`Error searching for ${cityName} police info:`, error);
+    }
+
+    // If search fails, construct a likely website URL and provide guidance
+    const constructedWebsite = this.constructLikelyWebsiteURL(cityName);
+    
+    console.log(`Search failed, returning city with constructed website: ${constructedWebsite}`);
+    return {
+      name: cityName,
+      county: countyName,
+      policePhone: `Search "${cityName} Texas police department phone"`,
+      policeWebsite: constructedWebsite,
+    };
+  }
+
+  /**
+   * Perform web search using available APIs and methods
+   */
+  private static async performWebSearch(cityName: string, countyName: string): Promise<{phone?: string, website?: string}> {
+    const results = { phone: undefined as string | undefined, website: undefined as string | undefined };
+
+    try {
+      // Method 1: Try to fetch city's main website and parse for police info
+      const cityWebsite = await this.findCityOfficialWebsite(cityName);
+      if (cityWebsite) {
+        results.website = cityWebsite;
+        
+        // Try to find police department page from main city site
+        const policeWebsite = await this.findPolicePageFromCityWebsite(cityWebsite, cityName);
+        if (policeWebsite) {
+          results.website = policeWebsite;
+        }
+      }
+
+      // Method 2: Try common government website patterns
+      if (!results.website) {
+        results.website = await this.tryCommonGovWebsites(cityName);
+      }
+
+      // Method 3: Try to extract phone from any found website
+      if (results.website && !results.phone) {
+        results.phone = await this.extractPhoneFromWebsite(results.website);
+      }
+
+    } catch (error) {
+      console.log('Web search methods failed:', error);
+    }
+
+    return results;
+  }
+
+  /**
+   * Find the city's official website
+   */
+  private static async findCityOfficialWebsite(cityName: string): Promise<string | undefined> {
+    // Try common city website patterns
+    const patterns = [
+      `cityof${cityName.toLowerCase().replace(/\s+/g, '')}.com`,
+      `${cityName.toLowerCase().replace(/\s+/g, '')}tx.gov`,
+      `${cityName.toLowerCase().replace(/\s+/g, '')}.tx.us`,
+      `city${cityName.toLowerCase().replace(/\s+/g, '')}.org`,
+      `www.cityof${cityName.toLowerCase().replace(/\s+/g, '')}.com`
+    ];
+
+    for (const domain of patterns) {
+      try {
+        const url = domain.startsWith('www.') ? `https://${domain}` : `https://www.${domain}`;
+        
+        // Try to fetch just the headers to see if site exists
+        const response = await fetch(url, { 
+          method: 'HEAD',
+          mode: 'no-cors', // This will help with CORS issues
+          cache: 'no-cache'
+        });
+        
+        // If we get here without error, the site likely exists
+        console.log(`Found potential city website: ${url}`);
+        return url;
+      } catch (error) {
+        continue; // Try next pattern
+      }
+    }
+
+    return undefined;
+  }
+
+  /**
+   * Find police department page from city website
+   */
+  private static async findPolicePageFromCityWebsite(cityWebsite: string, cityName: string): Promise<string | undefined> {
+    try {
+      // Try common police department page patterns
+      const baseUrl = new URL(cityWebsite).origin;
+      const policePatterns = [
+        '/police',
+        '/departments/police',
+        '/police-department',
+        '/public-safety/police',
+        '/services/police',
+        '/government/departments/police'
+      ];
+
+      for (const pattern of policePatterns) {
+        try {
+          const policeUrl = `${baseUrl}${pattern}`;
+          const response = await fetch(policeUrl, { 
+            method: 'HEAD',
+            mode: 'no-cors',
+            cache: 'no-cache'
+          });
+          
+          console.log(`Found potential police page: ${policeUrl}`);
+          return policeUrl;
+        } catch (error) {
+          continue;
+        }
+      }
+    } catch (error) {
+      console.log('Error finding police page:', error);
+    }
+
+    return undefined;
+  }
+
+  /**
+   * Try common government website patterns
+   */
+  private static async tryCommonGovWebsites(cityName: string): Promise<string | undefined> {
+    const citySlug = cityName.toLowerCase().replace(/\s+/g, '').replace(/[^a-z]/g, '');
+    
+    const govPatterns = [
+      `https://${citySlug}.tx.us`,
+      `https://www.${citySlug}tx.gov`,
+      `https://city${citySlug}.org`,
+      `https://${citySlug}.org`,
+      `https://www.cityof${citySlug}.net`
+    ];
+
+    for (const url of govPatterns) {
+      try {
+        const response = await fetch(url, { 
+          method: 'HEAD',
+          mode: 'no-cors',
+          cache: 'no-cache'
+        });
+        
+        console.log(`Found government website: ${url}`);
+        return url;
+      } catch (error) {
+        continue;
+      }
+    }
+
+    return undefined;
+  }
+
+  /**
+   * Extract phone number from website (limited due to CORS)
+   */
+  private static async extractPhoneFromWebsite(website: string): Promise<string | undefined> {
+    // Due to CORS restrictions, we can't easily fetch and parse website content
+    // Instead, we'll return a search suggestion
+    return undefined;
+  }
+
+  /**
+   * Extract phone number from text using regex
+   */
+  private static extractPhoneNumber(text: string): string | undefined {
+    if (!text) return undefined;
+    
+    // Common phone number patterns for US numbers
+    const phonePatterns = [
+      /\((\d{3})\)\s*(\d{3})-(\d{4})/,  // (409) 123-4567
+      /(\d{3})-(\d{3})-(\d{4})/,        // 409-123-4567
+      /(\d{3})\.(\d{3})\.(\d{4})/,      // 409.123.4567
+      /(\d{3})\s+(\d{3})\s+(\d{4})/,    // 409 123 4567
+      /1?[-.\s]?\(?(\d{3})\)?[-.\s]?(\d{3})[-.\s]?(\d{4})/ // Various formats with optional 1
+    ];
+
+    for (const pattern of phonePatterns) {
+      const match = text.match(pattern);
+      if (match) {
+        // Format as (XXX) XXX-XXXX
+        const digits = match[0].replace(/\D/g, '');
+        if (digits.length === 10) {
+          return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+        } else if (digits.length === 11 && digits[0] === '1') {
+          return `(${digits.slice(1, 4)}) ${digits.slice(4, 7)}-${digits.slice(7)}`;
+        }
+      }
+    }
+    
+    return undefined;
+  }
+
+  /**
+   * Extract website URL from text
+   */
+  private static extractWebsite(text: string, cityName: string): string | undefined {
+    if (!text) return undefined;
+    
+    // Look for URLs in the text
+    const urlPatterns = [
+      /https?:\/\/[^\s<>"]+/gi,
+      /www\.[^\s<>"]+/gi,
+      /[a-zA-Z0-9][a-zA-Z0-9-]*\.(gov|org|com|net)[^\s<>"]*/gi
+    ];
+
+    for (const pattern of urlPatterns) {
+      const matches = text.match(pattern);
+      if (matches) {
+        for (let url of matches) {
+          // Clean up the URL
+          url = url.replace(/[.,;:]$/, ''); // Remove trailing punctuation
+          
+          // Prefer .gov sites or sites that contain the city name
+          if (url.includes('.gov') || url.toLowerCase().includes(cityName.toLowerCase().replace(/\s+/g, ''))) {
+            // Ensure it starts with http
+            if (!url.startsWith('http')) {
+              url = 'https://' + url;
+            }
+            return url;
+          }
+        }
+        
+        // If no preferred URL found, return the first one
+        let url = matches[0].replace(/[.,;:]$/, '');
+        if (!url.startsWith('http')) {
+          url = 'https://' + url;
+        }
+        return url;
+      }
+    }
+    
+    return undefined;
+  }
+
+  /**
+   * Construct a likely website URL for the city
+   */
+  private static constructLikelyWebsiteURL(cityName: string): string {
+    // Convert city name to likely domain format
+    const citySlug = cityName.toLowerCase()
+      .replace(/\s+/g, '') // Remove spaces
+      .replace(/[^a-z0-9]/g, ''); // Remove special characters
+    
+    // Try common patterns for city government websites
+    const patterns = [
+      `https://www.cityof${citySlug}.com`,
+      `https://www.${citySlug}tx.gov`,
+      `https://www.${citySlug}texas.gov`,
+      `https://www.city${citySlug}.com`,
+      `https://${citySlug}.tx.us`,
+      `https://www.${citySlug}.org`
+    ];
+    
+    // Return the most likely one (usually cityof[name].com or [name]tx.gov)
+    return patterns[0];
+  }
+}
