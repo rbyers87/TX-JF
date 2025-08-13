@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { MapPin, Search, Info } from 'lucide-react-native';
+import { MapPin, Search, Info, Map } from 'lucide-react-native';
 
 export default function TabLayout() {
   return (
@@ -36,6 +36,15 @@ export default function TabLayout() {
           title: 'Search Address',
           tabBarIcon: ({ size, color }) => (
             <Search size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="map"
+        options={{
+          title: 'Map View',
+          tabBarIcon: ({ size, color }) => (
+            <Map size={size} color={color} />
           ),
         }}
       />
