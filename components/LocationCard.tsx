@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import * as Location from 'expo-location';
 import { MapPin, Clock } from 'lucide-react-native';
 import { GeocodingService } from '@/services/geocodingService';
+import type { LocationObject } from '@/services/locationService';
 
 interface LocationCardProps {
-  location: Location.LocationObject;
+  location: LocationObject;
 }
 
 export function LocationCard({ location }: LocationCardProps) {
@@ -19,17 +19,12 @@ export function LocationCard({ location }: LocationCardProps) {
           location.coords.longitude
         );
         setAddress(addressResult || 'Address unavailable');
-      } catch (error) {
+      } catch {
         setAddress('Address unavailable');
       }
     };
-
     getAddress();
   }, [location]);
-
-  const formatTimestamp = (timestamp: number) => {
-    return new Date(timestamp).toLocaleString();
-  };
 
   return (
     <View style={styles.container}>
@@ -54,7 +49,7 @@ export function LocationCard({ location }: LocationCardProps) {
       <View style={styles.timestampContainer}>
         <Clock size={14} color="#9ca3af" />
         <Text style={styles.timestamp}>
-          Updated: {formatTimestamp(location.timestamp)}
+          Updated: {new Date(location.timestamp).toLocaleString()}
         </Text>
       </View>
     </View>
