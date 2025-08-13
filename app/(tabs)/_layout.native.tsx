@@ -20,41 +20,34 @@ export default function TabLayout() {
           fontSize: 12,
           fontWeight: '600',
         },
-      }}>
+      }}
+    >
       <Tabs.Screen
         name="index"
         options={{
           title: 'Current Location',
-          tabBarIcon: ({ size, color }) => (
-            <MapPin size={size} color={color} />
-          ),
+          tabBarIcon: ({ size, color }) => <MapPin size={size} color={color} />,
         }}
       />
       <Tabs.Screen
         name="search"
         options={{
           title: 'Search Address',
-          tabBarIcon: ({ size, color }) => (
-            <Search size={size} color={color} />
-          ),
+          tabBarIcon: ({ size, color }) => <Search size={size} color={color} />,
         }}
       />
       <Tabs.Screen
         name="map"
         options={{
           title: 'Map View',
-          tabBarIcon: ({ size, color }) => (
-            <Map size={size} color={color} />
-          ),
+          tabBarIcon: ({ size, color }) => <Map size={size} color={color} />,
         }}
       />
       <Tabs.Screen
         name="about"
         options={{
           title: 'About',
-          tabBarIcon: ({ size, color }) => (
-            <Info size={size} color={color} />
-          ),
+          tabBarIcon: ({ size, color }) => <Info size={size} color={color} />,
         }}
       />
     </Tabs>
