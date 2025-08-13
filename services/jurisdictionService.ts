@@ -486,7 +486,7 @@ export class JurisdictionService {
           const attrs = feature.attributes;
           
           // Try various field name combinations based on different data sources
-          const possibleCityFields = [
+          let possibleCityFields = [
             'CITY_NM', 'NAME', 'CITY_NAME', 'City', 'CITYNAME', 'NAMELSAD',
             'NAME10', 'GEONAME', 'CITY_FIPS', 'PLACE_NAME', 'FULLNAME'
           ];
@@ -499,6 +499,11 @@ export class JurisdictionService {
           let cityName = null;
           let countyName = null;
 
+          // Prioritize certain fields based on observed data structures
+          if (endpoint === this.TXDOT_CITIES_URL) {
+            possibleCityFields = ['CITY_NM', 'NAME', ...possibleCityFields];
+          }
+
           // Find city name
           for (const field of possibleCityFields) {
             if (attrs[field] && typeof attrs[field] === 'string' && attrs[field].trim()) {
@@ -506,6 +511,11 @@ export class JurisdictionService {
               console.log(`Found city name in field '${field}': ${cityName}`);
               break;
             }
+          }
+
+          // If city name is still null, try to extract from FULLNAME
+          if (!cityName && attrs['FULLNAME'] && typeof attrs['FULLNAME'] === 'string') {
+            cityName = attrs['FULLNAME'].split('/')[0].replace('City of ', '').trim();
           }
 
           // Find county name
@@ -519,7 +529,7 @@ export class JurisdictionService {
 
           if (cityName) {
             // Clean up city name - remove state suffixes and common prefixes
-            cityName = cityName.replace(/, TX$/, '').replace(/, Texas$/, '').replace(/^City of /, '');
+            cityName = cityName.replace(/, TX$/, '').replace(/, Texas$/, '').replace(/^City of /, '').trim();
             
             // Special handling for Port Arthur
             if (cityName.toLowerCase().includes('port arthur')) {
@@ -527,6 +537,11 @@ export class JurisdictionService {
             }
 
             console.log(`Final city name: ${cityName}`);
+
+            if (!cityName) {
+              console.log('City name is empty after cleanup, skipping city lookup.');
+              continue;
+            }
 
             // Look up city data from our database
             const cityKey = cityName.toLowerCase();
@@ -536,13 +551,13 @@ export class JurisdictionService {
               console.log(`Found city in database: ${cityData.name}`);
               return cityData;
             } else {
-              console.log(`City not in database, generating contact information`);
+              console.log(`City not in database, generating contact information via web search`);
               
               // Use web search service to find real contact information
               const searchResult = await WebSearchService.searchPoliceInfo(cityName, countyName || 'Unknown County');
               
               const generatedCityData: CityData = {
-                name: cityName,
+                name: cityName.trim(),
                 county: countyName || 'Unknown County',
                 policePhone: searchResult.phone,
                 policeWebsite: searchResult.website,
@@ -628,152 +643,3 @@ export class JurisdictionService {
           ];
 
           let countyName = null;
-
-          // Find county name
-          for (const field of possibleCountyFields) {
-            if (attrs[field] && typeof attrs[field] === 'string' && attrs[field].trim()) {
-              countyName = attrs[field].trim();
-              console.log(`Found county name in field '${field}': ${countyName}`);
-              break;
-            }
-          }
-
-          if (countyName) {
-            // Clean up county name
-            countyName = countyName.replace(/, TX$/, '').replace(/, Texas$/, '').replace(/ County$/, '');
-            
-            // Add "County" back if it was stripped
-            if (!countyName.toLowerCase().includes('county')) {
-              countyName += ' County';
-            }
-
-            console.log(`Final county name: ${countyName}`);
-
-            // Look up county data from our database
-            const countyKey = countyName.toLowerCase().replace(' county', '').replace(' ', '_');
-            const countyData = TEXAS_COUNTIES[countyKey];
-
-            if (countyData) {
-              console.log(`Found county in database: ${countyData.name}`);
-              return countyData;
-            } else {
-              console.log(`County not in database, returning basic info`);
-              // Return basic county info if not in our database
-              return {
-                name: countyName,
-                sheriffPhone: undefined,
-                sheriffWebsite: undefined,
-              };
-            }
-          }
-        }
-      } catch (error) {
-        console.error(`Error with county endpoint ${index + 1}:`, error);
-        continue;
-      }
-    }
-
-    console.log('No county found, using Texas DPS fallback');
-    // Fallback to Texas DPS
-    return {
-      name: 'Texas',
-      sheriffPhone: '(512) 463-2000',
-      sheriffWebsite: 'https://www.dps.texas.gov',
-    };
-  }
-
-  /**
-   * Get the most common area code for a county
-   */
-  private static getAreaCodeForCounty(countyName: string): string {
-    const areaCodeMap: Record<string, string> = {
-      'jefferson county': '409',
-      'harris county': '713',
-      'dallas county': '214',
-      'tarrant county': '817',
-      'bexar county': '210',
-      'travis county': '512',
-      'collin county': '972',
-      'denton county': '940',
-      'fort bend county': '281',
-      'williamson county': '512',
-      'el paso county': '915',
-      'nueces county': '361',
-      'lubbock county': '806',
-      'galveston county': '409',
-      'montgomery county': '936',
-      'brazoria county': '979',
-      'bell county': '254',
-      'mclennan county': '254',
-      'cameron county': '956',
-      'webb county': '956',
-      'hidalgo county': '956',
-      'orange county': '409',
-      'smith county': '903',
-      'brazos county': '979',
-      // Add more counties as needed
-    };
-
-    const normalizedCounty = countyName.toLowerCase();
-    return areaCodeMap[normalizedCounty] || '512'; // Default to Austin area code
-  }
-
-  /**
-   * Generate a likely city hall phone number (which can transfer to police)
-   */
-  private static generateCityHallPhone(areaCode: string): string {
-    // Generate a realistic-looking city hall number
-    // Most city halls have numbers ending in common patterns
-    const commonEndings = ['1234', '2000', '3000', '4000', '5000', '1000', '2500', '3500'];
-    const randomEnding = commonEndings[Math.floor(Math.random() * commonEndings.length)];
-    
-    return `(${areaCode}) 555-${randomEnding.slice(0, 4)}`;
-  }
-
-  /**
-   * Generate a likely website URL for the city
-   */
-  private static generateLikelyWebsite(cityName: string): string {
-    const citySlug = cityName.toLowerCase()
-      .replace(/\s+/g, '') // Remove spaces
-      .replace(/[^a-z0-9]/g, ''); // Remove special characters
-    
-    // Most common pattern for Texas cities
-    return `https://www.cityof${citySlug}.com`;
-  }
-
-  /**
-   * Get search suggestions for manual lookup
-   */
-  static getSearchSuggestions(cityName: string, countyName: string) {
-    const areaCode = this.getAreaCodeForCounty(countyName);
-    
-    return {
-      phoneSearch: [
-        `"${cityName} Texas police department phone"`,
-        `"${cityName} police ${areaCode}"`,
-        `"${cityName} city hall phone ${areaCode}"`,
-        `"${cityName} ${countyName} police"`
-      ],
-      websiteSearch: [
-        `"${cityName} Texas police department"`,
-        `"city of ${cityName} police"`,
-        `"${cityName} TX police department"`,
-        `site:gov "${cityName}" police`
-      ],
-      generalSearch: [
-        `"${cityName} Texas police non emergency"`,
-        `"${cityName} ${countyName} law enforcement"`,
-        `"${cityName} police chief" contact`,
-        `"${cityName} TX police report"`
-      ]
-    };
-  }
-
-  /**
-   * Clear the search cache
-   */
-  static clearSearchCache(): void {
-    this.cityContactCache.clear();
-  }
-}
