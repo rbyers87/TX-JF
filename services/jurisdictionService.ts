@@ -1,5 +1,4 @@
 import { LocationData, CityData, CountyData } from '@/types/location';
-import { WebSearchService } from './webSearchService';
 
 // Texas Counties with Sheriff contact information
 const TEXAS_COUNTIES: Record<string, CountyData> = {
@@ -403,7 +402,6 @@ export class JurisdictionService {
             phone: cityResult.policePhone,
             website: cityResult.policeWebsite,
             address: cityResult.address,
-            address: cityResult.address,
           },
         };
       } else {
@@ -418,7 +416,6 @@ export class JurisdictionService {
             type: 'Sheriff\'s Office',
             phone: county.sheriffPhone,
             website: county.sheriffWebsite,
-            address: county.address,
           },
         };
       }
@@ -538,20 +535,22 @@ export class JurisdictionService {
             } else {
               console.log(`City not in database, generating contact information`);
               
-              // Use web search service to find real contact information
-              const searchResult = await WebSearchService.searchPoliceInfo(cityName, countyName || 'Unknown County');
+              // Check cache first
+              const cacheKey = cityName.toLowerCase();
+              if (this.cityContactCache.has(cacheKey)) {
+                console.log(`Found city in cache: ${cityName}`);
+                return this.cityContactCache.get(cacheKey)!;
+              }
+
+              // Generate contact information for unknown cities
+              const generatedCityData = this.generateCityContactInfo(cityName, countyName || 'Unknown County');
               
-              // Convert search result to CityData format
-              const cityData: CityData = {
-                name: searchResult.cityName,
-                county: searchResult.county,
-                policePhone: searchResult.phone,
-                policeWebsite: searchResult.website,
-                address: `Search "${searchResult.cityName} Texas police department address"`
-              };
+              // Cache the result
+              this.cityContactCache.set(cacheKey, generatedCityData);
               
-              console.log(`Found contact info for ${cityName}:`, cityData);
-              return cityData;
+              console.log(`Generated contact info for ${cityName}:`, generatedCityData);
+              
+              return generatedCityData;
             }
           }
         }
@@ -683,10 +682,121 @@ export class JurisdictionService {
   }
 
   /**
+   * Generate contact information for cities not in the database
+   */
+  private static generateCityContactInfo(cityName: string, countyName: string): CityData {
+    // For unknown cities, provide guidance instead of fake phone numbers
+    const searchGuidance = this.getSearchSuggestions(cityName, countyName);
+    
+    // Generate likely website URL
+    const website = this.generateLikelyWebsite(cityName);
+    
+    // Provide helpful search instruction instead of fake number
+    const phoneGuidance = `Call 411 or search: ${searchGuidance.phoneSearch[0]}`;
+    const addressGuidance = `Search "${cityName} Texas police department address" or visit city hall`;
+    
+    return {
+      name: cityName,
+      county: countyName,
+      policePhone: phoneGuidance,
+      policeWebsite: website,
+      address: addressGuidance,
+    };
+  }
 
+  /**
+   * Get the most common area code for a county
+   */
+  private static getAreaCodeForCounty(countyName: string): string {
+    const areaCodeMap: Record<string, string> = {
+      'jefferson county': '409',
+      'harris county': '713',
+      'dallas county': '214',
+      'tarrant county': '817',
+      'bexar county': '210',
+      'travis county': '512',
+      'collin county': '972',
+      'denton county': '940',
+      'fort bend county': '281',
+      'williamson county': '512',
+      'el paso county': '915',
+      'nueces county': '361',
+      'lubbock county': '806',
+      'galveston county': '409',
+      'montgomery county': '936',
+      'brazoria county': '979',
+      'bell county': '254',
+      'mclennan county': '254',
+      'cameron county': '956',
+      'webb county': '956',
+      'hidalgo county': '956',
+      'orange county': '409',
+      'smith county': '903',
+      'brazos county': '979',
+      // Add more counties as needed
+    };
+
+    const normalizedCounty = countyName.toLowerCase();
+    return areaCodeMap[normalizedCounty] || '512'; // Default to Austin area code
+  }
+
+  /**
+   * Generate a likely city hall phone number (which can transfer to police)
+   */
+  private static generateCityHallPhone(areaCode: string): string {
+    // Generate a realistic-looking city hall number
+    // Most city halls have numbers ending in common patterns
+    const commonEndings = ['1234', '2000', '3000', '4000', '5000', '1000', '2500', '3500'];
+    const randomEnding = commonEndings[Math.floor(Math.random() * commonEndings.length)];
+    
+    return `(${areaCode}) 555-${randomEnding.slice(0, 4)}`;
+  }
+
+  /**
+   * Generate a likely website URL for the city
+   */
+  private static generateLikelyWebsite(cityName: string): string {
+    const citySlug = cityName.toLowerCase()
+      .replace(/\s+/g, '') // Remove spaces
+      .replace(/[^a-z0-9]/g, ''); // Remove special characters
+    
+    // Most common pattern for Texas cities
+    return `https://www.cityof${citySlug}.com`;
+  }
+
+  /**
+   * Get search suggestions for manual lookup
+   */
+  static getSearchSuggestions(cityName: string, countyName: string) {
+    const areaCode = this.getAreaCodeForCounty(countyName);
+    
+    return {
+      phoneSearch: [
+        `"${cityName} Texas police department phone"`,
+        `"${cityName} police ${areaCode}"`,
+        `"${cityName} city hall phone ${areaCode}"`,
+        `"${cityName} ${countyName} police"`
+      ],
+      websiteSearch: [
+        `"${cityName} Texas police department"`,
+        `"city of ${cityName} police"`,
+        `"${cityName} TX police department"`,
+        `site:gov "${cityName}" police`
+      ],
+      generalSearch: [
+        `"${cityName} Texas police non emergency"`,
+        `"${cityName} ${countyName} law enforcement"`,
+        `"${cityName} police chief" contact`,
+        `"${cityName} TX police report"`
+      ]
+    };
+  }
+
+  /**
    * Clear the search cache
    */
   static clearSearchCache(): void {
     this.cityContactCache.clear();
   }
+}
 }
