@@ -1,44 +1,82 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
-import { MapPin, RefreshCw, TriangleAlert as AlertTriangle } from 'lucide-react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  Alert,
+  ActivityIndicator,
+} from 'react-native';
+import * as Location from 'expo-location';
+import { MapPin, Phone, RefreshCw, TriangleAlert as AlertTriangle } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { LocationData } from '@/types/location';
 import { JurisdictionService } from '@/services/jurisdictionService';
 import { LocationCard } from '@/components/LocationCard';
 import { JurisdictionCard } from '@/components/JurisdictionCard';
-import { getCurrentLocation } from '@/services/locationService';
-import type { LocationObject } from '@/services/locationService';
 
 export default function CurrentLocationScreen() {
-  const [location, setLocation] = useState<LocationObject | null>(null);
+  const [location, setLocation] = useState<Location.LocationObject | null>(null);
   const [locationData, setLocationData] = useState<LocationData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const loadLocation = async () => {
+  const requestLocationPermission = async () => {
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        setError('Location permission is required to determine jurisdiction.');
+        return false;
+      }
+      return true;
+    } catch (err) {
+      setError('Failed to request location permission.');
+      return false;
+    }
+  };
+
+  const getCurrentLocation = async () => {
     setLoading(true);
     setError(null);
+
     try {
-      const currentLocation = await getCurrentLocation();
+      const hasPermission = await requestLocationPermission();
+      if (!hasPermission) {
+        setLoading(false);
+        return;
+      }
+
+      const currentLocation = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.High,
+      });
+
       setLocation(currentLocation);
+
+      // Get jurisdiction data
       const jurisdictionData = await JurisdictionService.getJurisdictionByCoordinates(
         currentLocation.coords.latitude,
         currentLocation.coords.longitude
       );
+
       setLocationData(jurisdictionData);
-    } catch {
-      setError('Failed to get current location.');
+    } catch (err) {
+      setError('Failed to get current location. Please try again.');
+      console.error('Location error:', err);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    loadLocation();
+    getCurrentLocation();
   }, []);
 
   return (
-    <LinearGradient colors={['#1e40af', '#3b82f6']} style={styles.container}>
+    <LinearGradient
+      colors={['#1e40af', '#3b82f6']}
+      style={styles.container}
+    >
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
         <View style={styles.header}>
           <Text style={styles.title}>Texas Law Enforcement</Text>
@@ -56,8 +94,15 @@ export default function CurrentLocationScreen() {
           <View style={styles.cardHeader}>
             <MapPin size={24} color="#1e40af" />
             <Text style={styles.cardTitle}>Current Location</Text>
-            <TouchableOpacity onPress={loadLocation} style={styles.refreshButton} disabled={loading}>
-              <RefreshCw size={20} color={loading ? "#9ca3af" : "#1e40af"} />
+            <TouchableOpacity
+              onPress={getCurrentLocation}
+              style={styles.refreshButton}
+              disabled={loading}
+            >
+              <RefreshCw 
+                size={20} 
+                color={loading ? "#9ca3af" : "#1e40af"} 
+              />
             </TouchableOpacity>
           </View>
 
@@ -68,8 +113,28 @@ export default function CurrentLocationScreen() {
             </View>
           )}
 
-          {location && !loading && <LocationCard location={location} />}
-          {locationData && !loading && <JurisdictionCard jurisdiction={locationData} />}
+          {location && !loading && (
+            <LocationCard location={location} />
+          )}
+
+          {locationData && !loading && (
+            <JurisdictionCard jurisdiction={locationData} />
+          )}
+
+          {!location && !loading && !error && (
+            <View style={styles.instructionContainer}>
+              <Text style={styles.instructionText}>
+                Tap the refresh button to detect your current location and find the appropriate law enforcement agency.
+              </Text>
+            </View>
+          )}
+        </View>
+
+        <View style={styles.emergencyNotice}>
+          <AlertTriangle size={20} color="#dc2626" />
+          <Text style={styles.emergencyText}>
+            For immediate emergencies, always dial 911
+          </Text>
         </View>
       </ScrollView>
     </LinearGradient>

@@ -1,15 +1,12 @@
 {
-  "homepage": "https://rbyers87.github.io/TX-JF",
   "name": "bolt-expo-starter",
   "main": "expo-router/entry",
   "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev": "EXPO_NO_TELEMETRY=1 expo start",
-    "build:web": "expo export --platform web --output-dir dist",
-    "lint": "expo lint",
-    "predeploy": "npm run build:web",
-    "deploy": "gh-pages -d dist"
+    "build:web": "expo export --platform web",
+    "lint": "expo lint"
   },
   "dependencies": {
     "@expo/vector-icons": "^14.1.0",
@@ -31,12 +28,9 @@
     "expo-symbols": "~0.4.3",
     "expo-system-ui": "~5.0.5",
     "expo-web-browser": "~14.1.5",
-    "leaflet": "^1.9.4",
-    "lucide-react": "^0.539.0",
     "lucide-react-native": "^0.475.0",
     "react": "19.0.0",
     "react-dom": "19.0.0",
-    "react-leaflet": "^5.0.0",
     "react-native": "0.79.1",
     "react-native-gesture-handler": "~2.24.0",
     "react-native-maps": "^1.25.3",

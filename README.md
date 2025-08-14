@@ -10,5 +10,3 @@ County - https://gis-txdot.opendata.arcgis.com/datasets/TXDOT::texas-county-boun
 City - https://gis-txdot.opendata.arcgis.com/datasets/TXDOT::texas-cities/about
 
 Trying to mimic how 9-1-1 decides jurisdiciton.  App provides a non-emergency phone number, address, and website if one is available.
-
-5
